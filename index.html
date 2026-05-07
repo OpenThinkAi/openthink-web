@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>openthink — open-source agentic composition</title>
+<meta name="description" content="Open-source agentic composition: local-first tools that compose into agent-driven workflows — memory, code review, codebase audits, ticket pipelines, and the pipes between them.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="app">
+
+  <!-- SUITE BAR -->
+  <div class="suitebar">
+    <span class="brand">openthink</span>
+    <span class="sep">/</span>
+    <a href="/" class="current">home</a>
+    <span class="sep">·</span>
+    <a href="/think/">think</a>
+    <a href="/team/">team</a>
+    <a href="/stamp/">stamp</a>
+    <a href="/ui-leaf/">ui-leaf</a>
+    <a href="/audit/">audit</a>
+    <a href="/dispatch/">dispatch</a>
+    <span class="grow"></span>
+    <span class="meta">MIT · open source</span>
+  </div>
+
+  <!-- LAYOUT (no sidebar on home) -->
+  <div class="layout full">
+    <main class="pane main-pane">
+      <div class="pane-title">[<span class="key">M</span>]AIN</div>
+
+      <section class="view active" data-view="home">
+        <div class="hero">
+          <div class="badge"><span class="dot"></span>open source · MIT · local-first</div>
+          <h1>open-source tools<br><span class="accent">for agentic composition</span>.</h1>
+          <p class="lead">Local-first building blocks for agent-driven workflows. Memory across sessions, code review without GitHub PRs, whole-codebase audits, role-pipelined tickets, browser views for any CLI, and the routing in between &mdash; pieces small enough to compose, opinionated enough to ship.</p>
+          <div class="install-line"><span class="prompt">$</span>npm install -g @openthink/&lt;tool&gt;</div>
+          <div class="install-note">every tool ships independently · no central runtime · pick what you need</div>
+        </div>
+
+        <h2 class="section-h" id="tools">// the suite</h2>
+
+        <div class="tool-grid">
+
+          <a class="tool-card" href="/think/">
+            <div class="tool-head">
+              <h3>think</h3>
+              <span class="tool-pkg">@openthink/think</span>
+            </div>
+            <div class="tool-tag">memory for AI agents</div>
+            <p class="tool-desc">Local-first nervous system. Engrams in, curated memories out — recallable across sessions and synced across your machines via any folder you already use (iCloud, Dropbox, Syncthing).</p>
+            <div class="tool-meta">
+              <span class="install">npm i -g @openthink/think</span>
+            </div>
+          </a>
+
+          <a class="tool-card" href="/team/">
+            <div class="tool-head">
+              <h3>team</h3>
+              <span class="tool-pkg">@openthink/team · oteam</span>
+            </div>
+            <div class="tool-tag">role-pipeline ticket pump</div>
+            <p class="tool-desc">Vault-driven role pipeline for spawning Claude agents against tickets. Product · Spike · Implementation · QA — each phase, its own model. Works with any source-of-truth vault.</p>
+            <div class="tool-meta">
+              <span class="install">npm i -g @openthink/team</span>
+            </div>
+          </a>
+
+          <a class="tool-card" href="/stamp/">
+            <div class="tool-head">
+              <h3>stamp</h3>
+              <span class="tool-pkg">@openthink/stamp</span>
+            </div>
+            <div class="tool-tag">local headless code review</div>
+            <p class="tool-desc">Author-agent opens a diff. Reviewer-agents return structured stamps. Merge server verifies and signs the merge. PR-class governance, no PR — agent-to-agent review without GitHub.</p>
+            <div class="tool-meta">
+              <span class="install">npm i -g @openthink/stamp</span>
+            </div>
+          </a>
+
+          <a class="tool-card" href="/ui-leaf/">
+            <div class="tool-head">
+              <h3>ui-leaf</h3>
+              <span class="tool-pkg">@openthink/ui-leaf</span>
+            </div>
+            <div class="tool-tag">bring-your-own-view runtime</div>
+            <p class="tool-desc">Customizable browser views, on demand, for any CLI in any language. Mount a template once with a single command; ship the data — get a rich rendered view.</p>
+            <div class="tool-meta">
+              <span class="install">npm i -g @openthink/ui-leaf</span>
+            </div>
+          </a>
+
+          <a class="tool-card" href="/audit/">
+            <div class="tool-head">
+              <h3>audit</h3>
+              <span class="tool-pkg">@openthink/audit · oaudit</span>
+            </div>
+            <div class="tool-tag">whole-codebase audits</div>
+            <p class="tool-desc">Composable audit specs for cross-cutting passes — security, perf, dead code, doc drift. Spec docs in trusted/untrusted pairs; one long-lived agent per pass. Built in Rust.</p>
+            <div class="tool-meta">
+              <span class="install">cargo install open-audit</span>
+            </div>
+          </a>
+
+          <a class="tool-card" href="/dispatch/">
+            <div class="tool-head">
+              <h3>dispatch</h3>
+              <span class="tool-pkg">@openthink/dispatch</span>
+            </div>
+            <div class="tool-tag">GitHub triage router</div>
+            <p class="tool-desc">Polls every configured GitHub repo on a schedule, triages new issues with Haiku, and files them straight into the right oteam vault. Your inbox stays empty.</p>
+            <div class="tool-meta">
+              <span class="install">npm i -g @openthink/dispatch</span>
+            </div>
+          </a>
+
+        </div>
+
+        <h2 class="section-h" id="philosophy">// the shape of it</h2>
+        <p>Each tool stands alone. Each tool composes with the others. <code>dispatch</code> files into <code>team</code>; <code>team</code> spawns agents that ship code; <code>stamp</code> reviews the diff before merge; <code>think</code> remembers what was decided so the next session doesn't repeat the work; <code>audit</code> sweeps the whole tree on demand; <code>ui-leaf</code> renders any of it in a browser when a terminal isn't enough.</p>
+        <p>All local-first. All MIT. No mandatory cloud. No vendor lock-in. The pieces are small on purpose — pick the ones you need, leave the rest.</p>
+
+      </section>
+    </main>
+  </div>
+
+  <!-- STATUS BAR -->
+  <div class="statusbar">
+    <div class="left"><span class="status-dot"></span>openthink suite · ready</div>
+    <div class="spacer"></div>
+    <div class="right">
+      <span><span class="key-pill">g</span>github</span>
+      <span><span class="key-pill">?</span>help</span>
+    </div>
+  </div>
+</div>
+
+<!-- HELP MODAL -->
+<div class="modal" id="help-modal" hidden>
+  <div class="modal-pane">
+    <div class="pane-title">[<span class="key">?</span>] HELP</div>
+    <button class="modal-close" aria-label="close">×</button>
+    <h3>Keyboard shortcuts</h3>
+    <table class="help-table">
+      <tr><td><span class="key-pill">g</span></td><td>open github org</td></tr>
+      <tr><td><span class="key-pill">?</span></td><td>toggle this help</td></tr>
+      <tr><td><span class="key-pill">esc</span></td><td>close</td></tr>
+    </table>
+  </div>
+</div>
+
+<script>
+  window.SITE_CONFIG = {
+    tool: null,
+    githubUrl: 'https://github.com/OpenThinkAi'
+  };
+</script>
+<script src="/app.js"></script>
+</body>
+</html>

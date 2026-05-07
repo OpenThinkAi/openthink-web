@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>team — role-pipeline ticket pump · openthink</title>
+<meta name="description" content="Vault-driven role pipeline for spawning Claude agents against tickets. Product, Spike, Implementation, QA — each phase its own model.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="app">
+  <div class="suitebar">
+    <span class="brand">openthink</span>
+    <span class="sep">/</span>
+    <a href="/">home</a>
+    <span class="sep">·</span>
+    <a href="/think/">think</a>
+    <a href="/team/" class="current">team</a>
+    <a href="/stamp/">stamp</a>
+    <a href="/ui-leaf/">ui-leaf</a>
+    <a href="/audit/">audit</a>
+    <a href="/dispatch/">dispatch</a>
+    <span class="grow"></span>
+    <span class="meta">@openthink/team · MIT</span>
+  </div>
+
+  <div class="layout full">
+    <main class="pane main-pane">
+      <div class="pane-title">[<span class="key">M</span>]AIN</div>
+      <section class="view active" data-view="home">
+        <div class="hero">
+          <div class="badge"><span class="dot"></span><span id="version-badge">v0.0.0</span> · open source · MIT</div>
+          <h1>role-pipeline<br><span class="accent">ticket pump</span>.</h1>
+          <p class="lead">Source-agnostic, vault-driven role pipeline for spawning Claude agents against tickets. Lifts the "Assign to agent" + role-pipeline flow out of agentic-desktop into a standalone CLI.</p>
+          <div class="install-line"><span class="prompt">$</span>npm install -g @openthink/team</div>
+          <div class="install-note">binary: <code>oteam</code> · per-phase model selection (product / spike / impl / QA)</div>
+        </div>
+
+        <h2 class="section-h">// page in progress</h2>
+        <p>Full concepts, install, and docs pages are being written. For now, head to the <a href="https://github.com/OpenThinkAi/open-team">github repo</a> for the README and CLI surface, or back to the <a href="/">suite homepage</a>.</p>
+      </section>
+    </main>
+  </div>
+
+  <div class="statusbar">
+    <div class="left"><span class="status-dot"></span>team · in progress</div>
+    <div class="spacer"></div>
+    <div class="right">
+      <span><span class="key-pill">g</span>github</span>
+      <span><span class="key-pill">?</span>help</span>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="help-modal" hidden>
+  <div class="modal-pane">
+    <div class="pane-title">[<span class="key">?</span>] HELP</div>
+    <button class="modal-close" aria-label="close">×</button>
+    <h3>Keyboard shortcuts</h3>
+    <table class="help-table">
+      <tr><td><span class="key-pill">g</span></td><td>open github</td></tr>
+      <tr><td><span class="key-pill">?</span></td><td>toggle this help</td></tr>
+      <tr><td><span class="key-pill">esc</span></td><td>close</td></tr>
+    </table>
+  </div>
+</div>
+
+<script>
+  window.SITE_CONFIG = {
+    tool: 'team',
+    githubUrl: 'https://github.com/OpenThinkAi/open-team',
+    npmPackage: '@openthink/team'
+  };
+</script>
+<script src="/app.js"></script>
+</body>
+</html>

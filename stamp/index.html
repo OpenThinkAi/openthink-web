@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>stamp — local headless code review · openthink</title>
+<meta name="description" content="Local, headless pull-request system for agent-to-agent code review workflows.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="app">
+  <div class="suitebar">
+    <span class="brand">openthink</span>
+    <span class="sep">/</span>
+    <a href="/">home</a>
+    <span class="sep">·</span>
+    <a href="/think/">think</a>
+    <a href="/team/">team</a>
+    <a href="/stamp/" class="current">stamp</a>
+    <a href="/ui-leaf/">ui-leaf</a>
+    <a href="/audit/">audit</a>
+    <a href="/dispatch/">dispatch</a>
+    <span class="grow"></span>
+    <span class="meta">@openthink/stamp · MIT</span>
+  </div>
+
+  <div class="layout full">
+    <main class="pane main-pane">
+      <div class="pane-title">[<span class="key">M</span>]AIN</div>
+      <section class="view active" data-view="home">
+        <div class="hero">
+          <div class="badge"><span class="dot"></span><span id="version-badge">v0.0.0</span> · open source · MIT</div>
+          <h1>local headless<br><span class="accent">code review</span>.</h1>
+          <p class="lead">Author-agent opens a diff. Reviewer-agents return structured stamps. Merge server verifies signatures and signs the merge. PR-class governance for agent-to-agent code review &mdash; without a GitHub PR.</p>
+          <div class="install-line"><span class="prompt">$</span>npm install -g @openthink/stamp</div>
+          <div class="install-note">binary: <code>stamp</code> · cryptographic signing · self-host the merge server</div>
+        </div>
+
+        <h2 class="section-h">// page in progress</h2>
+        <p>Full concepts, install, and docs pages are being written. For now, head to the <a href="https://github.com/OpenThinkAi/stamp-cli">github repo</a> for the README and CLI surface, or back to the <a href="/">suite homepage</a>.</p>
+      </section>
+    </main>
+  </div>
+
+  <div class="statusbar">
+    <div class="left"><span class="status-dot"></span>stamp · in progress</div>
+    <div class="spacer"></div>
+    <div class="right">
+      <span><span class="key-pill">g</span>github</span>
+      <span><span class="key-pill">?</span>help</span>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="help-modal" hidden>
+  <div class="modal-pane">
+    <div class="pane-title">[<span class="key">?</span>] HELP</div>
+    <button class="modal-close" aria-label="close">×</button>
+    <h3>Keyboard shortcuts</h3>
+    <table class="help-table">
+      <tr><td><span class="key-pill">g</span></td><td>open github</td></tr>
+      <tr><td><span class="key-pill">?</span></td><td>toggle this help</td></tr>
+      <tr><td><span class="key-pill">esc</span></td><td>close</td></tr>
+    </table>
+  </div>
+</div>
+
+<script>
+  window.SITE_CONFIG = {
+    tool: 'stamp',
+    githubUrl: 'https://github.com/OpenThinkAi/stamp-cli',
+    npmPackage: '@openthink/stamp'
+  };
+</script>
+<script src="/app.js"></script>
+</body>
+</html>
