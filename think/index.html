@@ -65,6 +65,12 @@
           <div class="install-note">requires Node 22.5+ · works with Claude Code out of the box</div>
         </div>
 
+        <div class="v3-banner">
+          <span class="v3-label">v3 alpha</span>
+          <span class="v3-body">vector recall &middot; write-time compaction &middot; resident daemon</span>
+          <code class="v3-install">npm install -g @openthink/think@alpha</code>
+        </div>
+
         <h2 class="section-h" id="demo">// one brain, many machines</h2>
 
         <div class="demo-flow">
@@ -182,6 +188,52 @@
           </div>
         </div>
 
+        <h2 class="section-h" id="v3">// v3 alpha — what's new</h2>
+        <p>Three architectural upgrades in <code>@openthink/think@alpha</code> that change the read and write paths.</p>
+
+        <div class="concept-list">
+          <div class="concept" id="v3c1">
+            <div class="num">[v3.1]</div>
+            <h3>vector recall</h3>
+            <p>Recall now runs semantic similarity over a resident <code>bge-small-en-v1.5</code> embedding model — right entries come back even when the query vocabulary doesn't overlap with stored text. BM25 keyword matching still runs in parallel; results are fused. No external API call; the model is local.</p>
+            <div class="demo">
+              <div><span class="prompt">$</span> think recall "token expiry edge case"</div>
+              <div class="out"><span class="cyan">Memories:</span></div>
+              <div class="out"><span class="dim">&#8594; Auth refactor: AES-256-GCM for session tokens &mdash; race condition...</span></div>
+            </div>
+          </div>
+
+          <div class="concept" id="v3c2">
+            <div class="num">[v3.2]</div>
+            <h3>write-time compaction</h3>
+            <p>The daemon folds each new engram into a single self-contained memory line via an LLM call at write time. No batch curation step required. The result: <code>think recall</code> hits local storage only &mdash; sub-100 ms reads, no model call at recall time.</p>
+            <div class="demo">
+              <div><span class="prompt">$</span> think sync "fixed flaky CI timeout in integration tests"</div>
+              <div class="out"><span class="check">✓</span> engram saved &rarr; compacted in background</div>
+            </div>
+          </div>
+
+          <div class="concept" id="v3c3">
+            <div class="num">[v3.3]</div>
+            <h3>resident daemon</h3>
+            <p>A background daemon keeps the embedding model warm in memory. CLI calls communicate over a Unix socket &mdash; no cold-start penalty per recall. The daemon starts on first use and stays resident; <code>think daemon status</code> shows its state.</p>
+            <div class="demo">
+              <div><span class="prompt">$</span> think daemon status</div>
+              <div class="out"><span class="check">✓</span> daemon running &middot; model loaded &middot; socket: ~/.think/daemon.sock</div>
+            </div>
+          </div>
+
+          <div class="concept" id="v3c4">
+            <div class="num">[v3.4]</div>
+            <h3>agent integration</h3>
+            <p>A <code>UserPromptSubmit</code> Claude Code hook and an MCP server both talk to the same daemon. Agents get semantic recall injected at prompt-submit time with no cold-start; the MCP surface exposes the same capabilities to any MCP-compatible client.</p>
+            <div class="demo">
+              <div><span class="prompt">$</span> think init --v3</div>
+              <div class="out"><span class="check">✓</span> hook + MCP server registered in CLAUDE.md</div>
+            </div>
+          </div>
+        </div>
+
         <h2 class="section-h" id="arch">// architecture</h2>
         <p>Three tiers of memory, each with a clear job. Engrams capture the moment. Memories distill what matters. Library is the long-term archive for memories you've outgrown but want to keep findable.</p>
         <pre class="arch-ascii">+- <span class="g">engrams</span> ----------------+      +- <span class="c">memories</span> ---------------+      +- <span class="m">library</span> ----------------+
@@ -208,6 +260,12 @@
             <div class="terminal"><span class="prompt">$</span>npm install -g @openthink/think</div>
             <div class="terminal"><span class="prompt">$</span>think init</div>
             <p class="note">Requires Node 22.5+. <code>think init</code> writes auto-logging instructions into your project's CLAUDE.md &mdash; your agents start logging work immediately. The curator and summary features use the <a href="https://www.npmjs.com/package/@anthropic-ai/claude-agent-sdk">Claude Agent SDK</a> and require a Claude subscription.</p>
+            <div class="v3-note">
+              <span class="v3-label">v3 alpha</span>
+              <span class="v3-body">Try the alpha: vector recall, daemon, MCP server</span>
+              <div class="terminal v3-terminal"><span class="prompt">$</span>npm install -g @openthink/think@alpha</div>
+              <p class="note">v3 reads v2 storage. First launch reindexes existing memories into the vector store automatically &mdash; no manual migration step.</p>
+            </div>
           </li>
           <li id="s2">
             <h3>Point cortex at a folder</h3>
@@ -275,6 +333,8 @@ think update                   Update to latest version</pre>
         <ul class="link-list">
           <li><span class="link-label">github</span><a href="https://github.com/OpenThinkAi/think-cli">github.com/OpenThinkAi/think-cli</a></li>
           <li><span class="link-label">npm</span><a href="https://www.npmjs.com/package/@openthink/think">npmjs.com/package/@openthink/think</a></li>
+          <li><span class="link-label">npm alpha</span><a href="https://www.npmjs.com/package/@openthink/think">npmjs.com/package/@openthink/think</a></li>
+          <li><span class="link-label">v3 design</span><a href="https://github.com/OpenThinkAi/think-cli/blob/main/docs/think-v3.md">github.com/OpenThinkAi/think-cli/blob/main/docs/think-v3.md</a></li>
           <li><span class="link-label">issues</span><a href="https://github.com/OpenThinkAi/think-cli/issues">github.com/OpenThinkAi/think-cli/issues</a></li>
           <li><span class="link-label">license</span>MIT</li>
         </ul>
@@ -359,6 +419,12 @@ think update                   Update to latest version</pre>
             { label: '03 cortex',   href: '#c3' },
             { label: '04 recall',   href: '#c4' },
           ]},
+          { label: 'v3 alpha', items: [
+            { label: 'v3.1 vector recall',      href: '#v3c1' },
+            { label: 'v3.2 write-time compact', href: '#v3c2' },
+            { label: 'v3.3 resident daemon',    href: '#v3c3' },
+            { label: 'v3.4 agent integration',  href: '#v3c4' },
+          ]},
           { label: 'design', items: [
             { label: 'architecture', href: '#arch' },
           ]},
@@ -382,6 +448,7 @@ think update                   Update to latest version</pre>
           { label: 'links', items: [
             { label: 'github', href: 'https://github.com/OpenThinkAi/think-cli', external: true },
             { label: 'npm', href: 'https://www.npmjs.com/package/@openthink/think', external: true },
+            { label: 'v3 design doc', href: 'https://github.com/OpenThinkAi/think-cli/blob/main/docs/think-v3.md', external: true },
             { label: 'issues', href: 'https://github.com/OpenThinkAi/think-cli/issues', external: true },
           ]},
         ],
