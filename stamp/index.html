@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>stamp — local headless code review · openthink</title>
-<meta name="description" content="Local, headless pull-request system for agent-to-agent code review workflows.">
+<title>stamp — signed code review for AI agents · openthink</title>
+<meta name="description" content="Push code review into the commit workflow. Reviewer-agents you control return signed verdicts on every diff; the gate stays closed until they approve, and the attestation verifies downstream.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -12,6 +12,8 @@
 </head>
 <body>
 <div class="app">
+
+  <!-- SUITE BAR -->
   <div class="suitebar">
     <span class="brand">openthink</span>
     <span class="sep">/</span>
@@ -27,41 +29,292 @@
     <span class="meta">@openthink/stamp · MIT</span>
   </div>
 
-  <div class="layout full">
+  <!-- TAB BAR -->
+  <div class="tabbar" role="tablist">
+    <button class="tab" data-tab="home" role="tab"><span class="key">h</span>ome</button>
+    <button class="tab" data-tab="concepts" role="tab"><span class="key">c</span>oncepts</button>
+    <button class="tab" data-tab="install" role="tab"><span class="key">i</span>nstall</button>
+    <button class="tab" data-tab="docs" role="tab"><span class="key">d</span>ocs</button>
+    <div class="tab-spacer"></div>
+    <div class="tab-meta">
+      <span class="pill" id="version-pill">v0.0.0</span>
+      <span class="dim">stamp · MIT</span>
+    </div>
+  </div>
+
+  <!-- LAYOUT -->
+  <div class="layout">
+
+    <!-- SIDEBAR -->
+    <aside class="pane sidebar">
+      <div class="pane-title">[<span class="key">N</span>]AV</div>
+      <nav class="nav-tree" id="sidebar-nav"></nav>
+    </aside>
+
+    <!-- MAIN -->
     <main class="pane main-pane">
       <div class="pane-title">[<span class="key">M</span>]AIN</div>
-      <section class="view active" data-view="home">
+
+      <!-- HOME VIEW -->
+      <section class="view" data-view="home">
         <div class="hero">
           <div class="badge"><span class="dot"></span><span id="version-badge">v0.0.0</span> · open source · MIT</div>
-          <h1>local headless<br><span class="accent">code review</span>.</h1>
-          <p class="lead">Author-agent opens a diff. Reviewer-agents return structured stamps. Merge server verifies signatures and signs the merge. PR-class governance for agent-to-agent code review &mdash; without a GitHub PR.</p>
+          <h1>signed code review.<br><span class="accent">for agents.</span></h1>
+          <p class="lead">Push review into the agent's commit loop, not the pull request. Reviewer-agents you control return structured verdicts on every diff &mdash; and an approval is a cryptographic attestation, bound to the diff, that anything downstream can verify by signature alone. <strong>Accuracy is settled in the loop, so the PR is free to be about alignment &mdash; the part that actually needs a human.</strong></p>
           <div class="install-line"><span class="prompt">$</span>npm install -g @openthink/stamp</div>
-          <div class="install-note">binary: <code>stamp</code> · cryptographic signing · self-host the merge server</div>
+          <div class="install-note">binary: <code>stamp</code> · ed25519 signing · three deployment shapes, one review flow</div>
         </div>
 
-        <h2 class="section-h">// page in progress</h2>
-        <p>Full concepts, install, and docs pages are being written. For now, head to the <a href="https://github.com/OpenThinkAi/stamp-cli">github repo</a> for the README and CLI surface, or back to the <a href="../">suite homepage</a>.</p>
+        <h2 class="section-h" id="cycle">// the review cycle</h2>
+
+        <div class="demo-flow">
+          <div class="demo-step">
+            <div class="demo-label">an agent opens a diff on a feature branch</div>
+            <div class="demo-terminal">
+              <div><span class="prompt">$</span> git checkout -b feat/rate-limit</div>
+              <div class="out"><span class="dim"># ...edit, commit on the branch...</span></div>
+              <div><span class="prompt">$</span> stamp review --diff main..HEAD</div>
+              <div class="out"><span class="cyan">running 3 reviewers in parallel...</span></div>
+              <div class="out"><span class="check">✓</span> security   <span class="dim">approved</span></div>
+              <div class="out"><span class="check">✓</span> standards  <span class="dim">approved</span></div>
+              <div class="out"><span class="check">!</span> product    <span class="dim">changes_requested &mdash; rate-limit window not configurable</span></div>
+            </div>
+          </div>
+
+          <div class="demo-step">
+            <div class="demo-label">the agent fixes it and re-reviews &mdash; seconds, not a PR round-trip</div>
+            <div class="demo-terminal">
+              <div><span class="prompt">$</span> stamp review --diff main..HEAD</div>
+              <div class="out"><span class="check">✓</span> security   <span class="dim">approved</span></div>
+              <div class="out"><span class="check">✓</span> standards  <span class="dim">approved</span></div>
+              <div class="out"><span class="check">✓</span> product    <span class="dim">approved</span></div>
+              <div><span class="prompt">$</span> stamp status --diff main..HEAD</div>
+              <div class="out"><span class="check">✓</span> gate <span class="cyan">open</span> &mdash; all required reviewers approved</div>
+            </div>
+          </div>
+
+          <div class="demo-step">
+            <div class="demo-label">merge is signed; the attestation rides the commit</div>
+            <div class="demo-terminal">
+              <div><span class="prompt">$</span> stamp merge feat/rate-limit --into main</div>
+              <div class="out">  merge feat/rate-limit → main? <span class="dim">[y/N]</span> y</div>
+              <div class="out"><span class="check">✓</span> signed v4 attestation &mdash; <span class="dim">Stamp-Verified trailer written</span></div>
+              <div><span class="prompt">$</span> stamp verify HEAD</div>
+              <div class="out"><span class="check">✓</span> attestation valid &middot; 3/3 reviewers &middot; key trusted</div>
+            </div>
+          </div>
+        </div>
+
+        <h2 class="section-h" id="why">// backpressure, not a bigger PR</h2>
+        <p>The expensive part &mdash; an AI actually reading the change &mdash; runs <strong>in the agent's loop</strong>, scoped to the diff, not in a git hook. Put a model call in a hook and you've blocked git on a slow review: that's the crawl. Instead the agent calls the reviewers on the diff, gets structured verdicts, fixes, and re-runs &mdash; a pass takes <strong>~5&ndash;30 seconds</strong> on a small change, so it cycles against the reviewer in real time.</p>
+        <p>What sits at the git boundary is cheap: a <strong>signature check</strong>. The reviewer signs an attestation over the diff when it approves; the pre-receive hook (or a CI check) just verifies that signature &mdash; milliseconds, no model call, no test run. The precommit gate is fast <em>because the thinking already happened upstream, on a tiny diff.</em></p>
+
+        <h2 class="section-h" id="split">// AI code review, minus the burden</h2>
+        <p>The human attention that used to go to re-reading diffs is freed for the judgment only a human can make. And because review is cheap per-diff, the agent decomposes into <em>tiny</em> commits on purpose &mdash; so what arrives for alignment is a clean, scoped change, not a giant unreadable AI PR.</p>
+        <p>All the questions that make agent PRs exhausting &mdash; did it skip an edge case, did it really run the tests it claimed, did it touch files it had no reason to &mdash; are accuracy questions. They get answered upstream, by reviewers built to look for exactly that, before anything becomes a PR. So the PR stops being where you play detective: the attestation already says the review happened, and you're left with the one question worth a human &mdash; <em>is this the right change?</em> &mdash; on a diff small enough to actually answer it.</p>
+
+        <h2 class="section-h" id="next">// get started</h2>
+        <p>Pick a <a href="#" data-goto="install">deployment shape</a> &mdash; self-hosted gate, GitHub PR check, or local-only &mdash; or read the <a href="#" data-goto="concepts">concepts</a> first to understand attestations and the gate.</p>
       </section>
+
+      <!-- CONCEPTS VIEW -->
+      <section class="view" data-view="concepts">
+        <h2 class="view-title">// concepts</h2>
+        <p class="view-sub">Reviewers are AI personas you control.<br>An attestation is their signed verdict on the diff.<br>The gate stays closed until the attestation exists.<br>Verification re-checks it anywhere, anytime.</p>
+
+        <div class="concept-list">
+          <div class="concept" id="c1">
+            <div class="num">[01]</div>
+            <h3>reviewers</h3>
+            <p>AI review personas, defined as plain markdown prompt files at <code>.stamp/reviewers/&lt;name&gt;.md</code>. <code>stamp init</code> scaffolds three &mdash; <code>security</code>, <code>standards</code>, <code>product</code> &mdash; and you edit them to fit your stack and domain. The whole machine contract is one trailing line: <code>VERDICT: approved</code> (or <code>changes_requested</code> / <code>denied</code>). Everything else is prompt engineering you own.</p>
+            <div class="demo">
+              <div><span class="prompt">$</span> stamp reviewers add performance</div>
+              <div class="out"><span class="check">✓</span> scaffolded .stamp/reviewers/performance.md</div>
+            </div>
+          </div>
+
+          <div class="concept" id="c2">
+            <div class="num">[02]</div>
+            <h3>attestation</h3>
+            <p>A reviewer verdict is signed into a cryptographic attestation bound to the <strong>content</strong> of the diff (via <code>git patch-id</code>). It travels with the change &mdash; a commit trailer on a signed merge, or a <code>refs/stamp/attestations/&lt;patch-id&gt;</code> ref on a PR. Because it's keyed on content, it survives squash, rebase, and merge-commit: the same diff carries the same attestation.</p>
+            <div class="demo">
+              <div><span class="prompt">$</span> stamp verify HEAD</div>
+              <div class="out"><span class="check">✓</span> attestation valid &middot; signed by trusted key</div>
+            </div>
+          </div>
+
+          <div class="concept" id="c3">
+            <div class="num">[03]</div>
+            <h3>the gate</h3>
+            <p>The gate is the rule that a change can't land until the required reviewers approve. <code>stamp status</code> reports it; <code>stamp merge</code> enforces it before signing. Closed by default &mdash; unreviewed or rejected code simply doesn't have a valid attestation, so nothing downstream accepts it.</p>
+            <div class="demo">
+              <div><span class="prompt">$</span> stamp status --diff main..HEAD</div>
+              <div class="out"><span class="check">✗</span> gate <span class="dim">closed</span> &mdash; product: changes_requested</div>
+            </div>
+          </div>
+
+          <div class="concept" id="c4">
+            <div class="num">[04]</div>
+            <h3>verification</h3>
+            <p>Any party with the trusted-keys manifest can re-verify an attestation without re-running the reviewers &mdash; locally with <code>stamp verify</code>, server-side in a pre-receive hook, or in CI via the <code>stamp/verify-attestation@v1</code> GitHub Action. The trust root is a manifest of ed25519 public keys you control; signatures are checked end-to-end.</p>
+            <div class="demo">
+              <div><span class="prompt">$</span> stamp keys list</div>
+              <div class="out"><span class="cyan">trusted:</span> security-team, release-bot</div>
+            </div>
+          </div>
+        </div>
+
+        <h2 class="section-h" id="shapes">// deployment shapes</h2>
+        <p>One review flow, three ways to <em>enforce</em> it &mdash; an explicit trust ladder. Pick deliberately; they make different guarantees.</p>
+
+        <div class="concept-list">
+          <div class="concept" id="shape-server">
+            <div class="num">[A]</div>
+            <h3>server-gated <span class="dim">— strongest</span></h3>
+            <p>A stamp server you deployed (git + sshd) signs every verdict and runs a <strong>pre-receive hook</strong> that rejects unstamped pushes before <code>main</code> moves. Nothing unsigned reaches the remote. The fastest iteration loop &mdash; sign locally, push, done &mdash; and the only shape with true server-side enforcement.</p>
+          </div>
+
+          <div class="concept" id="shape-github">
+            <div class="num">[B]</div>
+            <h3>github-primary <span class="dim">— PR + CI</span></h3>
+            <p>For teams whose source of truth is GitHub. The reviewer flow stays local (full speed, full control); the attestation rides the PR and a required status check (<code>stamp/verify-attestation@v1</code>) verifies it before merge. Point reviewers at a stamp-server for server-signed verdicts <strong>without transferring your source</strong> to it. Unreviewed code can't go green.</p>
+          </div>
+
+          <div class="concept" id="shape-local">
+            <div class="num">[C]</div>
+            <h3>local-only <span class="dim">— fastest, no trust</span></h3>
+            <p>No server, no server-side enforcement &mdash; pure iteration feedback when you haven't deployed a gate. <code>stamp review --plan</code> / <code>--headless</code> fan reviewers out for fast feedback with no signed verdict; <code>stamp merge</code> still signs the merge locally (and <code>stamp verify</code> validates it on any clone), but the remote rejects nothing. Discipline-only: anyone with write access can push. Use it to iterate, then graduate to a gated shape.</p>
+          </div>
+        </div>
+
+        <h2 class="section-h" id="arch">// how it fits together</h2>
+        <pre class="arch-ascii">+- <span class="g">author-agent</span> ----------+      +- <span class="c">reviewer-agents</span> --------+      +- <span class="m">gate + sign</span> ------------+
+|                          |      |                          |      |                          |
+|  opens a diff on a       | ───&gt;|  your personas run in    | ───&gt;|  all approved? sign a    |
+|  feature branch          |      |  parallel, each returns  |      |  <span class="m">v4 attestation</span> bound   |
+|                          |      |  a <span class="c">VERDICT:</span> line        |      |  to the diff's patch-id  |
+|  <span class="dim">stamp review</span>           |      |  <span class="dim">.stamp/reviewers/*.md</span>    |      |  <span class="dim">stamp merge / attest</span>     |
++--------------------------+      +--------------------------+      +-----------+--------------+
+                                                                                |
+                                  +- <span class="g">verify anywhere</span> --------+                   | rides the
+                                  |  pre-receive hook · CI    |&lt;──────────────────+ commit / PR
+                                  |  check · stamp verify     |
+                                  +---------------------------+</pre>
+        <p>The reviewers are AI personas you author. The attestation is the only thing that needs to be trusted downstream &mdash; and it's verifiable by signature, so the verifier never re-runs the model.</p>
+      </section>
+
+      <!-- INSTALL VIEW -->
+      <section class="view" data-view="install">
+        <h2 class="view-title">// install</h2>
+        <p class="view-sub">Install once, then pick the deployment shape that matches your trust model.</p>
+
+        <div class="terminal"><span class="prompt">$</span>npm install -g @openthink/stamp</div>
+        <p class="note"><code>stamp init</code> scaffolds <code>.stamp/</code> (config + three starter reviewers), generates an ed25519 keypair, and writes an <code>AGENTS.md</code> at the repo root telling your agents how to use the flow. Reviewers run on the <a href="https://www.npmjs.com/package/@anthropic-ai/claude-agent-sdk">Claude Agent SDK</a> and require a Claude subscription.</p>
+
+        <ol class="steps">
+          <li id="s1">
+            <h3>Shape A — server-gated <span class="dim">(self-hosted, strongest)</span></h3>
+            <div class="terminal"><span class="prompt">$</span>ssh stamp new-stamp-repo myproject    <span class="dim"># provision bare repo + hook</span></div>
+            <div class="terminal"><span class="prompt">$</span>git clone ssh://stamp/srv/git/myproject.git</div>
+            <div class="terminal"><span class="prompt">$</span>cd myproject &amp;&amp; stamp bootstrap        <span class="dim"># install real reviewers + trusted-keys, push</span></div>
+            <p class="note">Per change: <code>stamp review</code> → <code>stamp merge &lt;branch&gt; --into main</code> → <code>stamp push main</code>. The pre-receive hook verifies the attestation server-side and rejects anything unsigned. See the <a href="https://github.com/OpenThinkAi/stamp-cli/blob/main/docs/quickstart-server.md">server quickstart</a> for the Railway walkthrough.</p>
+          </li>
+          <li id="s2">
+            <h3>Shape B — github-primary <span class="dim">(PR + CI check)</span></h3>
+            <div class="terminal"><span class="prompt">$</span>cd myproject &amp;&amp; stamp init           <span class="dim"># scaffolds .stamp/ + .github/workflows/stamp-verify.yml</span></div>
+            <div class="terminal"><span class="prompt">$</span>git add .stamp .github &amp;&amp; git commit -m "stamp: scaffold PR verification"</div>
+            <div class="terminal"><span class="prompt">$</span>git push origin main</div>
+            <p class="note">In GitHub: <strong>Settings → Branches → Require status checks → add <code>stamp verify</code></strong>. Per change: <code>stamp review --diff main..HEAD</code> → <code>stamp attest --into main --push origin</code> → open the PR → the check goes green → a human clicks merge. For server-signed verdicts without code transfer, use <code>stamp init --migrate-to-server-attested --server &lt;host:port&gt;</code>.</p>
+          </li>
+          <li id="s3">
+            <h3>Shape C — local-only <span class="dim">(fastest, no trust)</span></h3>
+            <div class="terminal"><span class="prompt">$</span>cd myproject &amp;&amp; stamp init --mode local-only --no-pr-check</div>
+            <p class="note">No server, no server-side enforcement. <code>stamp review --plan --diff &lt;revspec&gt;</code> emits a structured plan a parent agent fans out to reviewer subagents (the <a href="https://github.com/OpenThinkAi/stamp-cli/blob/main/skills/stamp-review.md">stamp-review Claude Code skill</a> ships in the repo) &mdash; no signed verdict. Merges are still signed locally for discipline, but the remote rejects nothing &mdash; graduate to Shape A or B when you want a real gate.</p>
+          </li>
+        </ol>
+      </section>
+
+      <!-- DOCS VIEW -->
+      <section class="view" data-view="docs">
+        <h2 class="view-title">// docs</h2>
+        <p class="view-sub">Reference, source, and where to find help.</p>
+
+        <h2 class="section-h" id="commands">// core commands</h2>
+        <pre class="arch-ascii">stamp init [--mode &lt;shape&gt;]              Scaffold .stamp/ + keypair + AGENTS.md
+stamp bootstrap                          Replace placeholder reviewers on a fresh server repo
+stamp review --diff &lt;revspec&gt;            Run all reviewers in parallel
+stamp review --diff &lt;rev&gt; --only &lt;name&gt;  Run a single reviewer
+stamp review --plan --diff &lt;rev&gt;         Emit a plan for local-only fan-out (no attestation)
+stamp status --diff &lt;revspec&gt;            Gate check (exit 0 open, 1 closed)
+stamp merge &lt;branch&gt; --into &lt;target&gt;     Confirm → merge → sign attestation
+stamp attest [&lt;branch&gt;] --into &lt;t&gt; --push &lt;remote&gt;   Sign + push attestation ref (PR mode)
+stamp push &lt;target&gt;                      Plain git push; hook stderr forwarded
+stamp verify &lt;sha&gt;                       Verify a merge commit's attestation locally
+stamp verify-pr &lt;head&gt; --base &lt;ref&gt; --into &lt;branch&gt;  Consumer side of the GH Action
+
+stamp reviewers list|add|edit|test|show|remove|fetch|verify   Manage review personas
+stamp keys generate|list|export|trust   ed25519 key management
+stamp admin list-keys|add-key|revoke|sign   Trust-anchor administration (server-gated)
+stamp invites|users|trust ...           Membership management (server-gated)
+
+stamp log [&lt;sha&gt;]                        First-parent history w/ attestation summary
+stamp ui                                 Interactive TUI: list → detail → review prose
+stamp update                             Update to latest version</pre>
+
+        <h2 class="section-h" id="files">// where things live</h2>
+        <ul class="link-list">
+          <li><span class="link-label">.stamp/config.yml</span>reviewers, branch rules, path rules</li>
+          <li><span class="link-label">.stamp/reviewers/*.md</span>your review personas (prompt files)</li>
+          <li><span class="link-label">.stamp/trusted-keys/</span><code>manifest.yml</code> + pubkeys &mdash; the trust root</li>
+          <li><span class="link-label">.git/stamp/state.db</span>local SQLite: review verdicts, never committed</li>
+          <li><span class="link-label">~/.stamp/keys/</span><code>ed25519</code> / <code>ed25519.pub</code> &mdash; your signing key</li>
+          <li><span class="link-label">.github/workflows/</span><code>stamp-verify.yml</code> &mdash; PR-check verifier (Shape B)</li>
+          <li><span class="link-label">AGENTS.md</span>shape-aware guidance written into the repo root</li>
+        </ul>
+
+        <h2 class="section-h" id="links">// links</h2>
+        <ul class="link-list">
+          <li><span class="link-label">github</span><a href="https://github.com/OpenThinkAi/stamp-cli">github.com/OpenThinkAi/stamp-cli</a></li>
+          <li><span class="link-label">npm</span><a href="https://www.npmjs.com/package/@openthink/stamp">npmjs.com/package/@openthink/stamp</a></li>
+          <li><span class="link-label">design</span><a href="https://github.com/OpenThinkAi/stamp-cli/blob/main/DESIGN.md">DESIGN.md &mdash; spec + security model</a></li>
+          <li><span class="link-label">personas</span><a href="https://github.com/OpenThinkAi/stamp-cli/blob/main/docs/personas.md">writing reviewer prompts</a></li>
+          <li><span class="link-label">threat model</span><a href="https://github.com/OpenThinkAi/stamp-cli/blob/main/docs/threat-model.md">who attacks, how, what defends</a></li>
+          <li><span class="link-label">issues</span><a href="https://github.com/OpenThinkAi/stamp-cli/issues">github.com/OpenThinkAi/stamp-cli/issues</a></li>
+          <li><span class="link-label">license</span>MIT</li>
+        </ul>
+      </section>
+
     </main>
   </div>
 
+  <!-- STATUS BAR -->
   <div class="statusbar">
-    <div class="left"><span class="status-dot"></span>stamp · in progress</div>
+    <div class="left"><span class="status-dot"></span>stamp · ready</div>
     <div class="spacer"></div>
     <div class="right">
+      <span><span class="key-pill">↑↓</span>nav</span>
+      <span><span class="key-pill">⏎</span>select</span>
       <span><span class="key-pill">g</span>github</span>
+      <span><span class="key-pill">i</span>install</span>
       <span><span class="key-pill">?</span>help</span>
     </div>
   </div>
 </div>
 
+<!-- HELP MODAL -->
 <div class="modal" id="help-modal" hidden>
   <div class="modal-pane">
     <div class="pane-title">[<span class="key">?</span>] HELP</div>
     <button class="modal-close" aria-label="close">×</button>
     <h3>Keyboard shortcuts</h3>
     <table class="help-table">
+      <tr><td><span class="key-pill">h</span></td><td>home</td></tr>
+      <tr><td><span class="key-pill">c</span></td><td>concepts</td></tr>
+      <tr><td><span class="key-pill">i</span></td><td>install</td></tr>
+      <tr><td><span class="key-pill">d</span></td><td>docs</td></tr>
       <tr><td><span class="key-pill">g</span></td><td>open github</td></tr>
+      <tr><td><span class="key-pill">↑</span> <span class="key-pill">↓</span></td><td>navigate sidebar</td></tr>
+      <tr><td><span class="key-pill">⏎</span></td><td>select</td></tr>
       <tr><td><span class="key-pill">?</span></td><td>toggle this help</td></tr>
       <tr><td><span class="key-pill">esc</span></td><td>close</td></tr>
     </table>
@@ -71,8 +324,72 @@
 <script>
   window.SITE_CONFIG = {
     tool: 'stamp',
+    tabs: ['home', 'concepts', 'install', 'docs'],
     githubUrl: 'https://github.com/OpenThinkAi/stamp-cli',
-    npmPackage: '@openthink/stamp'
+    npmPackage: '@openthink/stamp',
+    sidebar: {
+      home: {
+        groups: [
+          { label: 'overview', items: [
+            { label: 'the review cycle', href: '#cycle' },
+            { label: 'backpressure', href: '#why' },
+            { label: 'less burden', href: '#split' },
+            { label: 'get started', href: '#next' },
+          ]},
+          { label: 'jump to', items: [
+            { label: 'concepts', tab: 'concepts' },
+            { label: 'install', tab: 'install' },
+            { label: 'docs', tab: 'docs' },
+          ]},
+          { label: 'links', items: [
+            { label: 'github', href: 'https://github.com/OpenThinkAi/stamp-cli', external: true },
+            { label: 'npm', href: 'https://www.npmjs.com/package/@openthink/stamp', external: true },
+          ]},
+        ],
+      },
+      concepts: {
+        groups: [
+          { label: 'concepts', items: [
+            { label: '01 reviewers',    href: '#c1' },
+            { label: '02 attestation',  href: '#c2' },
+            { label: '03 the gate',     href: '#c3' },
+            { label: '04 verification', href: '#c4' },
+          ]},
+          { label: 'deployment shapes', items: [
+            { label: 'A server-gated',   href: '#shape-server' },
+            { label: 'B github-primary', href: '#shape-github' },
+            { label: 'C local-only',     href: '#shape-local' },
+          ]},
+          { label: 'design', items: [
+            { label: 'how it fits together', href: '#arch' },
+          ]},
+        ],
+      },
+      install: {
+        groups: [
+          { label: 'deployment shapes', items: [
+            { label: 'A server-gated',   href: '#s1' },
+            { label: 'B github-primary', href: '#s2' },
+            { label: 'C local-only',     href: '#s3' },
+          ]},
+        ],
+      },
+      docs: {
+        groups: [
+          { label: 'reference', items: [
+            { label: 'core commands',     href: '#commands' },
+            { label: 'where things live', href: '#files' },
+            { label: 'links',             href: '#links' },
+          ]},
+          { label: 'links', items: [
+            { label: 'github', href: 'https://github.com/OpenThinkAi/stamp-cli', external: true },
+            { label: 'npm', href: 'https://www.npmjs.com/package/@openthink/stamp', external: true },
+            { label: 'design doc', href: 'https://github.com/OpenThinkAi/stamp-cli/blob/main/DESIGN.md', external: true },
+            { label: 'issues', href: 'https://github.com/OpenThinkAi/stamp-cli/issues', external: true },
+          ]},
+        ],
+      },
+    },
   };
 </script>
 <script src="../app.js"></script>
