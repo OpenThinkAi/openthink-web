@@ -4,7 +4,7 @@
   // Per-page configuration is set by each HTML page before loading this script,
   // via window.SITE_CONFIG. Shape:
   //   {
-  //     tool: 'think' | 'team' | 'stamp' | 'ui-leaf' | 'audit' | 'dispatch' | null,
+  //     tool: 'think' | 'team' | 'stamp' | 'ui-leaf' | 'audit' | null,
   //     tabs: ['home','concepts','install','docs'],
   //     githubUrl: 'https://github.com/...',
   //     npmPackage: '@openthink/think',         // optional, used to fetch latest version
