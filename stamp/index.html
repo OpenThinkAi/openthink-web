@@ -34,6 +34,7 @@
     <button class="tab" data-tab="install" role="tab"><span class="key">i</span>nstall</button>
     <button class="tab" data-tab="docs" role="tab"><span class="key">d</span>ocs</button>
     <div class="tab-spacer"></div>
+    <button class="nav-toggle" id="nav-toggle" aria-expanded="false" aria-controls="sidebar-nav"><span class="key">≡</span> nav</button>
     <div class="tab-meta">
       <span class="pill" id="version-pill">v0.0.0</span>
       <span class="dim">stamp · MIT</span>
@@ -58,7 +59,7 @@
         <div class="hero">
           <div class="hero-copy">
             <div class="badge"><span class="dot"></span><span id="version-badge">v0.0.0</span> · open source · MIT</div>
-            <h1>signed code review.<br><span class="accent">for agents.</span></h1>
+            <h1>signed code review.<br> <span class="accent">for agents.</span></h1>
             <p class="lead">Push review into the agent's commit loop, not the pull request. Reviewer-agents you control return structured verdicts on every diff &mdash; and an approval is a cryptographic attestation, bound to the diff, that anything downstream can verify by signature alone. <strong>Accuracy is settled in the loop, so the PR is free to be about alignment &mdash; the part that actually needs a human.</strong></p>
           </div>
           <div class="hero-install">

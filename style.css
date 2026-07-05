@@ -101,6 +101,18 @@ button { font: inherit; background: none; border: none; color: inherit; cursor: 
 .tab.active .key { color: #0a0a0c; }
 .tab .key { color: var(--accent); font-weight: 700; }
 .tab-spacer { flex: 1; border-right: 1px solid var(--border); }
+.nav-toggle {
+  display: none;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.7rem 1.1rem;
+  color: var(--cyan);
+  font-size: 13px;
+  border-right: 1px solid var(--border);
+  white-space: nowrap;
+}
+.nav-toggle .key { color: var(--accent); font-weight: 700; }
+.nav-toggle[aria-expanded="true"] { color: var(--green); }
 .tab-meta {
   padding: 0.7rem 1.2rem;
   display: flex;
@@ -127,6 +139,7 @@ button { font: inherit; background: none; border: none; color: inherit; cursor: 
   grid-template-columns: 240px 1fr;
   flex: 1;
 }
+.layout > .pane { min-width: 0; }
 .layout.full { grid-template-columns: 1fr; }
 
 /* ── Pane ── */
@@ -630,11 +643,17 @@ ul.link-list .link-label {
   .pane + .pane { border-left: 1px solid var(--border); border-top: none; }
   .main-pane { padding: 1.5rem 1.25rem; }
   .hero h1 { font-size: 1.9rem; }
-  .tabbar { overflow-x: auto; }
+  .hero h1 br { display: none; }
+  .nav-toggle { display: flex; }
+  .sidebar { display: none; }
+  .layout.nav-open .sidebar { display: block; }
+  .tabbar { overflow-x: auto; scrollbar-width: none; }
+  .tabbar::-webkit-scrollbar { display: none; }
   .tab-meta { display: none; }
   .statusbar .right { gap: 0.6rem; font-size: 10px; }
   .sidebar { padding-top: 1.2rem; }
-  .suitebar { overflow-x: auto; white-space: nowrap; padding: 0.45rem 0.7rem; gap: 0.5rem; }
+  .suitebar { overflow-x: auto; white-space: nowrap; padding: 0.45rem 0.7rem; gap: 0.5rem; scrollbar-width: none; }
+  .suitebar::-webkit-scrollbar { display: none; }
   .tool-grid { grid-template-columns: 1fr; }
 }
 

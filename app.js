@@ -52,6 +52,8 @@
     tabsEl.forEach(el => el.classList.toggle('active', el.dataset.tab === tab));
     viewsEl.forEach(el => el.classList.toggle('active', el.dataset.view === tab));
     renderSidebar(tab);
+    document.querySelector('.layout')?.classList.remove('nav-open');
+    document.getElementById('nav-toggle')?.setAttribute('aria-expanded', 'false');
     if (opts.updateHash !== false) {
       history.replaceState(null, '', '#' + tab);
     }
@@ -136,6 +138,23 @@
     });
     helpModal.addEventListener('click', e => {
       if (e.target === helpModal) helpModal.hidden = true;
+    });
+  }
+
+  // Mobile nav toggle (pages with a sidebar)
+  const navToggle = document.getElementById('nav-toggle');
+  const layoutEl = document.querySelector('.layout');
+  if (navToggle && layoutEl) {
+    navToggle.addEventListener('click', () => {
+      const open = layoutEl.classList.toggle('nav-open');
+      navToggle.setAttribute('aria-expanded', String(open));
+    });
+    // Choosing a destination closes the nav
+    document.querySelector('.sidebar')?.addEventListener('click', e => {
+      if (e.target.closest('a')) {
+        layoutEl.classList.remove('nav-open');
+        navToggle.setAttribute('aria-expanded', 'false');
+      }
     });
   }
 
