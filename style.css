@@ -207,6 +207,7 @@ button { font: inherit; background: none; border: none; color: inherit; cursor: 
   font-size: 13.5px;
   line-height: 1.7;
 }
+.main-pane p.wide { max-width: none; }
 .main-pane p strong { color: var(--fg); font-weight: 700; }
 .main-pane p code { color: var(--green); font-size: 12.5px; padding: 0.05em 0.3em; background: rgba(90,247,142,0.08); border-radius: 2px; }
 .main-pane p a { color: var(--cyan); }
