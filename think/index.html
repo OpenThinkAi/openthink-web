@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>think — memory for AI agents · openthink</title>
-<meta name="description" content="Local-first CLI that gives AI agents persistent, curated memory. Vector recall, write-time compaction, resident daemon — every sync is a memory your agent can recall next session.">
+<title>think — continuous alignment for distributed agent systems · openthink</title>
+<meta name="description" content="Continuous alignment for distributed agent systems. Before an agent acts, think recalls what's been decided, done, and learned across every session and machine you run. Local-first, sub-100ms recall.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -58,8 +58,8 @@
         <div class="hero">
           <div class="hero-copy">
             <div class="badge"><span class="dot"></span><span id="version-badge">v0.0.0</span> · open source · MIT</div>
-            <h1>memory for your<br><span class="accent">AI brain</span>.</h1>
-            <p class="lead">Local-first nervous system for AI agents. Every sync stores a memory; vector recall pulls it back next session &mdash; all in a folder you control.</p>
+            <h1>continuous alignment for<br><span class="accent">distributed agent systems</span>.</h1>
+            <p class="lead">Model alignment ends at training. Deployed agents drift &mdash; from your decisions, your conventions, each other &mdash; because every session starts blank. think closes the loop: before an agent acts, it recalls what's been decided, done, and learned across every session and machine you run. <strong>Alignment, at runtime, is a context problem. think is the context.</strong></p>
           </div>
           <div class="hero-install">
             <div class="install-line"><span class="prompt">$</span>npm install -g @openthink/think</div>
@@ -106,27 +106,28 @@
           </div>
         </div>
 
-        <h2 class="section-h" id="why">// the moment it clicks</h2>
+        <h2 class="section-h" id="why">// alignment, in practice</h2>
         <div class="demo-step">
-          <div class="demo-label">you ask your agent to build something</div>
+          <div class="demo-label">you say what you mean, not the whole procedure</div>
           <div class="demo-terminal">
-            <div><span class="prompt">&gt;</span> Build a quick prototype for the new settings page</div>
+            <div><span class="prompt">&gt;</span> Merge the PR</div>
           </div>
         </div>
         <div class="demo-step">
-          <div class="demo-label">the agent recalls context and changes course</div>
+          <div class="demo-label">the agent recalls how merges actually work here &mdash; and does what you meant</div>
           <div class="demo-terminal">
-            <div><span class="prompt">$</span> think recall "prototyping"</div>
-            <div class="out"><span class="cyan">── memories (1) ──</span></div>
-            <div class="out"><span class="dim">2026-06-30  Team retro flagged prototype ambiguity as a top issue &mdash; a</span></div>
-            <div class="out"><span class="dim">            previous prototype became a de facto spec with no scope</span></div>
-            <div class="out"><span class="dim">            annotations. Define prototype levels; bring engineers in earlier.</span></div>
+            <div><span class="prompt">$</span> think recall "merge process"</div>
+            <div class="out"><span class="cyan">── retros (1) ──</span></div>
+            <div class="out"><span class="dim">2026-05-25  Never plain-merge to main &mdash; merges here are stamp-gated:</span></div>
+            <div class="out"><span class="dim">            stamp review &rarr; stamp status &rarr; stamp merge. An unsigned merge</span></div>
+            <div class="out"><span class="dim">            commit breaks verification on the next PR.</span></div>
             <div class="out">&nbsp;</div>
-            <div class="out"><span class="check">!</span> Before I start, let me pin down the scope. A past retro called</div>
-            <div class="out">  out "quick prototypes" as exactly the shape that caused trouble.</div>
+            <div class="out"><span class="check">!</span> This repo gates merges through stamp &mdash; running the review flow</div>
+            <div class="out">  instead of a plain git merge.</div>
+            <div><span class="prompt">$</span> stamp review --diff main..feature</div>
           </div>
         </div>
-        <p>An agent with memory doesn't duplicate work, doesn't contradict decisions, and doesn't repeat mistakes you've already learned from.</p>
+        <p>"Merge the PR" meant <em>stamp-gated merge</em> &mdash; and the agent knew, because another session already learned it. An aligned agent does what you meant, not just what you typed: it doesn't contradict settled decisions, doesn't repeat a mistake another agent already made, and never needs the same correction twice.</p>
 
         <h2 class="section-h" id="next">// get started</h2>
         <p>Jump to <a href="#" data-goto="install">install</a> to set it up in 2 minutes, or read the <a href="#" data-goto="concepts">concepts</a> to understand the full pipeline.</p>
@@ -135,7 +136,7 @@
       <!-- CONCEPTS VIEW -->
       <section class="view" data-view="concepts">
         <h2 class="view-title">// concepts</h2>
-        <p class="view-sub">Memories are what's worth keeping &mdash; every sync writes one.<br>Cortex is the workspace they live in.<br>Recall plugs you back into them on demand.<br>The daemon keeps all of it instant.</p>
+        <p class="view-sub">Memories are what's worth keeping &mdash; every sync writes one.<br>Cortex is the workspace they live in.<br>Recall plugs any agent back into them on demand.<br>Alignment is what falls out.</p>
 
         <div class="concept-list">
           <div class="concept" id="c1">
@@ -366,7 +367,7 @@ think update                   Update to latest version</pre>
         groups: [
           { label: 'overview', items: [
             { label: 'one brain, many machines', href: '#demo' },
-            { label: 'the moment it clicks', href: '#why' },
+            { label: 'alignment, in practice', href: '#why' },
             { label: 'get started', href: '#next' },
           ]},
           { label: 'jump to', items: [
