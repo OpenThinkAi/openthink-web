@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>think — continuous alignment for distributed agent systems · openthink</title>
-<meta name="description" content="Continuous alignment for distributed agent systems. Before an agent acts, think recalls what's been decided, done, and learned across every session and machine you run. Local-first, sub-100ms recall.">
+<title>think — continuous alignment for agentic systems · openthink</title>
+<meta name="description" content="Continuous alignment for agentic systems. Before an agent acts, it recalls what's been decided, done, and learned across every session and machine you run — injectable context through intelligent vector recall. Local-first, sub-100ms.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -34,6 +34,7 @@
     <button class="tab" data-tab="install" role="tab"><span class="key">i</span>nstall</button>
     <button class="tab" data-tab="docs" role="tab"><span class="key">d</span>ocs</button>
     <div class="tab-spacer"></div>
+    <button class="nav-toggle" id="nav-toggle" aria-expanded="false" aria-controls="site-sidebar"><span class="key">≡</span> nav</button>
     <div class="tab-meta">
       <span class="pill" id="version-pill">v0.0.0</span>
       <span class="dim">think · MIT</span>
@@ -44,7 +45,7 @@
   <div class="layout">
 
     <!-- SIDEBAR -->
-    <aside class="pane sidebar">
+    <aside class="pane sidebar" id="site-sidebar">
       <div class="pane-title">[<span class="key">N</span>]AV</div>
       <nav class="nav-tree" id="sidebar-nav"></nav>
     </aside>
@@ -58,8 +59,8 @@
         <div class="hero">
           <div class="hero-copy">
             <div class="badge"><span class="dot"></span><span id="version-badge">v0.0.0</span> · open source · MIT</div>
-            <h1>continuous alignment for<br><span class="accent">distributed agent systems</span>.</h1>
-            <p class="lead">Model alignment ends at training. Deployed agents drift &mdash; from your decisions, your conventions, each other &mdash; because every session starts blank. think closes the loop: before an agent acts, it recalls what's been decided, done, and learned across every session and machine you run. <strong>Alignment, at runtime, is a context problem. think is the context.</strong></p>
+            <h1>continuous alignment<br> <span class="accent">for agentic systems</span>.</h1>
+            <p class="lead">Before an agent acts, it thinks about your system. It recalls what's been decided, done, and learned across every session and machine you run. <strong>Alignment at runtime is a context problem &mdash; and think provides injectable context through intelligent vector recall.</strong></p>
           </div>
           <div class="hero-install">
             <div class="install-line"><span class="prompt">$</span>npm install -g @openthink/think</div>
