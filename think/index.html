@@ -137,13 +137,13 @@
       <!-- CONCEPTS VIEW -->
       <section class="view" data-view="concepts">
         <h2 class="view-title">// concepts</h2>
-        <p class="view-sub">Memories are what's worth keeping &mdash; every sync writes one.<br>Cortex is the workspace they live in.<br>Recall plugs any agent back into them on demand.<br>Alignment is what falls out.</p>
+        <p class="view-sub">Memories are written when meaningful pieces of work are completed.<br>Retros capture what the agent would do different next time.<br>Cortex is a workspace that those memories and retros live in.<br>Recall injects memories and retros into a fresh agent.</p>
 
         <div class="concept-list">
           <div class="concept" id="c1">
             <div class="num">[01]</div>
             <h3>memories</h3>
-            <p>The primary write. Every <code>think sync</code> stores a memory directly in local SQLite &mdash; no triage step in between. A background LLM pass folds each new entry into a single self-contained line (write-time compaction), so every memory stands on its own and reads stay fast.</p>
+            <p>The primary write. Every <code>think sync</code> stores a memory directly to a local file. A background LLM folds each new entry into a single self-contained summary (write-time compaction), so every memory stands on its own and reads stay fast.</p>
             <div class="demo">
               <div><span class="prompt">$</span> think sync "shipped auth refactor"</div>
               <div class="out"><span class="check">✓</span> <span class="cyan">[personal]</span> <span class="dim">2026-07-04 17:41</span> stored memory</div>
@@ -152,8 +152,18 @@
 
           <div class="concept" id="c2">
             <div class="num">[02]</div>
+            <h3>retros</h3>
+            <p>What an agent would do different next time, recorded where the next agent will find it. <code>think retro</code> captures a footgun, gotcha, or convention scoped to a codebase; <code>think brief</code> surfaces them at task start for whoever works there next &mdash; you, or an agent that has never run there before.</p>
+            <div class="demo">
+              <div><span class="prompt">$</span> think retro "merges here are stamp-gated &mdash; never plain git merge to main"</div>
+              <div class="out"><span class="check">✓</span> <span class="cyan">[personal]</span> (context: openthink-web) stored retro</div>
+            </div>
+          </div>
+
+          <div class="concept" id="c3">
+            <div class="num">[03]</div>
             <h3>cortex</h3>
-            <p>The workspace your memories live in. Each cortex is a named scope &mdash; <code>personal</code>, <code>work</code> &mdash; with its own SQLite database and its own folder of JSONL files that propagates memories between your machines. You can have several and switch between them; the active cortex is where new memories land.</p>
+            <p>The workspace your memories and retros live in. Each cortex is a named scope &mdash; <code>personal</code>, <code>work</code> &mdash; with its own local database and its own folder of JSONL files that propagates memories between your machines. You can have several and switch between them; the active cortex is where new writes land.</p>
             <div class="demo">
               <div><span class="prompt">$</span> think cortex create personal</div>
               <div class="out"><span class="check">✓</span> Created cortex: personal</div>
@@ -162,10 +172,10 @@
             </div>
           </div>
 
-          <div class="concept" id="c3">
-            <div class="num">[03]</div>
+          <div class="concept" id="c4">
+            <div class="num">[04]</div>
             <h3>recall</h3>
-            <p>Semantic + keyword search over everything you've stored. Queries run against a local <code>bge-small-en-v1.5</code> embedding model fused with BM25 &mdash; the right entries come back even when the query vocabulary doesn't overlap with the stored text. Reads hit local SQLite only: sub-100&nbsp;ms, offline, no API call.</p>
+            <p>The read path. <code>think recall</code> pulls the memories and retros relevant to the task at hand &mdash; and agents don't have to ask: a <code>UserPromptSubmit</code> hook injects context at prompt-submit, and an MCP server gives any agent mid-turn recall. Reads are pure local lookups: sub-100&nbsp;ms, offline, no model call.</p>
             <div class="demo">
               <div><span class="prompt">$</span> think recall "token expiry edge case"</div>
               <div class="out"><span class="cyan">── memories (1) ──</span></div>
@@ -173,34 +183,24 @@
             </div>
           </div>
 
-          <div class="concept" id="c4">
-            <div class="num">[04]</div>
-            <h3>daemon</h3>
-            <p>A resident background process keeps the embedding model warm in memory and serves CLI calls over a Unix socket &mdash; no cold-start penalty per recall. It starts on first use and stays resident; <code>think daemon status</code> shows its state.</p>
-            <div class="demo">
-              <div><span class="prompt">$</span> think daemon status</div>
-              <div class="out"><span class="dim">status=running</span></div>
-              <div class="out"><span class="dim">socket=~/.think/daemon.sock</span></div>
-            </div>
-          </div>
-
           <div class="concept" id="c5">
             <div class="num">[05]</div>
-            <h3>agent integration</h3>
-            <p>A <code>UserPromptSubmit</code> Claude Code hook and an MCP server both talk to the same daemon. Agents get relevant memories injected at prompt-submit time and can recall mid-turn; the MCP surface exposes the same capabilities to any MCP-compatible client.</p>
+            <h3>vector embedding</h3>
+            <p>Why recall finds the right thing. Every entry is embedded with a local <code>bge-small-en-v1.5</code> model and searched by semantic similarity, fused with BM25 keyword matching &mdash; the right memories come back even when the query shares no vocabulary with the stored text. A resident daemon keeps the model warm, and embeddings never leave your machine.</p>
             <div class="demo">
-              <div><span class="prompt">$</span> think hook install</div>
-              <div><span class="prompt">$</span> think mcp install</div>
+              <div><span class="prompt">$</span> think daemon status</div>
+              <div class="out"><span class="dim">status=running · model loaded</span></div>
+              <div class="out"><span class="dim">socket=~/.think/daemon.sock</span></div>
             </div>
           </div>
 
           <div class="concept" id="c6">
             <div class="num">[06]</div>
-            <h3>curator</h3>
-            <p>The optional triage side-channel. External events (<code>think subscribe poll</code>) and the deprecated <code>think log</code> path write pending events instead of memories; <code>think curate</code> evaluates them and promotes the worthy ones. It never touches <code>think sync</code> writes &mdash; those are already memories.</p>
+            <h3>cloud</h3>
+            <p>How one mind spans machines. Point your cortex at any folder you already sync (iCloud, Dropbox, Syncthing) and memories propagate on their own &mdash; or sync through a hub: self-host one against the open wire protocol, or use <strong>think cloud</strong>, the managed hub (coming soon). Local is the source of truth either way.</p>
             <div class="demo">
-              <div><span class="prompt">$</span> think curate</div>
-              <div class="out">  12 evaluated, 3 promoted, 9 purged, 0 still pending</div>
+              <div><span class="prompt">$</span> think cortex setup --fs ~/Dropbox/think-cortex</div>
+              <div class="out"><span class="check">✓</span> Cortex folder: ~/Dropbox/think-cortex</div>
             </div>
           </div>
         </div>
@@ -385,12 +385,12 @@ think update                   Update to latest version</pre>
       concepts: {
         groups: [
           { label: 'concepts', items: [
-            { label: '01 memories',          href: '#c1' },
-            { label: '02 cortex',            href: '#c2' },
-            { label: '03 recall',            href: '#c3' },
-            { label: '04 daemon',            href: '#c4' },
-            { label: '05 agent integration', href: '#c5' },
-            { label: '06 curator',           href: '#c6' },
+            { label: '01 memories',         href: '#c1' },
+            { label: '02 retros',           href: '#c2' },
+            { label: '03 cortex',           href: '#c3' },
+            { label: '04 recall',           href: '#c4' },
+            { label: '05 vector embedding', href: '#c5' },
+            { label: '06 cloud',            href: '#c6' },
           ]},
           { label: 'design', items: [
             { label: 'architecture', href: '#arch' },
