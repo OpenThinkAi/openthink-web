@@ -322,11 +322,13 @@ button { font: inherit; background: none; border: none; color: inherit; cursor: 
   margin: 0 0 0.4rem;
   font-weight: 700;
 }
-.view-sub {
+/* p.view-sub (0,1,1) ties .main-pane p and wins by source order — a bare
+   .view-sub (0,1,0) loses and its max-width would be dead */
+p.view-sub {
   color: var(--fg-dim);
   font-size: 13.5px;
   margin: 0 0 2rem !important;
-  max-width: 65ch;
+  max-width: 72ch;
 }
 h2.section-h {
   color: var(--accent);
