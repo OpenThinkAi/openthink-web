@@ -60,7 +60,7 @@
           <div class="hero-copy">
             <div class="badge"><span class="dot"></span><span id="version-badge">v0.0.0</span> · open source · MIT</div>
             <h1>signed code review.<br> <span class="accent">for agents.</span></h1>
-            <p class="lead">Push review into the agent's commit loop, not the pull request. Reviewer-agents you control return structured verdicts on every diff &mdash; and an approval is a cryptographic attestation, bound to the diff, that anything downstream can verify by signature alone. <strong>Accuracy is settled in the loop, so the PR is free to be about alignment &mdash; the part that actually needs a human.</strong></p>
+            <p class="lead">Push review into the agent's commit loop, not the pull request. Reviewer-agents you control return structured verdicts on every diff &mdash; and an approval is a cryptographic attestation, bound to the diff, that anything downstream can verify by signature alone. In the trusted shapes the verdict itself is signed by a stamp server you deploy, so forging a review means forging a server signature. <strong>Accuracy is settled in the loop, so the PR is free to be about alignment &mdash; the part that actually needs a human.</strong></p>
           </div>
           <div class="hero-install">
             <div class="install-line"><span class="prompt">$</span>npm install -g @openthink/stamp</div>
@@ -77,39 +77,56 @@
               <div><span class="prompt">$</span> git checkout -b feat/rate-limit</div>
               <div class="out"><span class="dim"># ...edit, commit on the branch...</span></div>
               <div><span class="prompt">$</span> stamp review --diff main..HEAD</div>
-              <div class="out"><span class="cyan">running 3 reviewers in parallel...</span></div>
-              <div class="out"><span class="check">✓</span> security   <span class="dim">approved</span></div>
-              <div class="out"><span class="check">✓</span> standards  <span class="dim">approved</span></div>
-              <div class="out"><span class="check">!</span> product    <span class="dim">changes_requested &mdash; rate-limit window not configurable</span></div>
+              <div class="out">running 3 reviewers in parallel: security, standards, product</div>
+              <div class="out"><span class="dim">  diff: main..HEAD (9c31d04a → f4a7be22)</span></div>
+              <div class="out"><span class="dim"># ...security, standards: verdict: approved...</span></div>
+              <div class="out"><span class="dim">────────────────────────────────</span></div>
+              <div class="out">reviewer: product   base: 9c31d04a → f4a7be22</div>
+              <div class="out"><span class="dim">────────────────────────────────</span></div>
+              <div class="out">The 60s rate-limit window is hard-coded &mdash; make it</div>
+              <div class="out">configurable before this lands.</div>
+              <div class="out"><span class="dim">────────────────────────────────</span></div>
+              <div class="out">verdict: <span class="cyan">changes_requested</span></div>
             </div>
           </div>
 
           <div class="demo-step">
-            <div class="demo-label">the agent fixes it and re-reviews &mdash; seconds, not a PR round-trip</div>
+            <div class="demo-label">the agent fixes it and re-reviews &mdash; cached verdicts, delta-scoped re-reads, seconds not a PR round-trip</div>
             <div class="demo-terminal">
               <div><span class="prompt">$</span> stamp review --diff main..HEAD</div>
-              <div class="out"><span class="check">✓</span> security   <span class="dim">approved</span></div>
-              <div class="out"><span class="check">✓</span> standards  <span class="dim">approved</span></div>
-              <div class="out"><span class="check">✓</span> product    <span class="dim">approved</span></div>
+              <div class="out">running 3 reviewers in parallel: security, standards, product</div>
+              <div class="out"><span class="dim">note: 2 verdicts served from cache (security, standards)</span></div>
+              <div class="out"><span class="dim"># ...product re-reads only the delta since its last look...</span></div>
+              <div class="out">verdict: <span class="cyan">approved</span></div>
               <div><span class="prompt">$</span> stamp status --diff main..HEAD</div>
-              <div class="out"><span class="check">✓</span> gate <span class="cyan">open</span> &mdash; all required reviewers approved</div>
+              <div class="out">target: main   base: 9c31d04a → head: 81d2c9e0</div>
+              <div class="out">  <span class="check">✓</span>  security    <span class="dim">approved</span></div>
+              <div class="out">  <span class="check">✓</span>  standards   <span class="dim">approved</span></div>
+              <div class="out">  <span class="check">✓</span>  product     <span class="dim">approved</span></div>
+              <div class="out">gate: <span class="cyan">OPEN</span></div>
             </div>
           </div>
 
           <div class="demo-step">
-            <div class="demo-label">merge is signed; the attestation rides the commit</div>
+            <div class="demo-label">you confirm the merge &mdash; it's signed, and the attestation rides the commit</div>
             <div class="demo-terminal">
               <div><span class="prompt">$</span> stamp merge feat/rate-limit --into main</div>
-              <div class="out">  merge feat/rate-limit → main? <span class="dim">[y/N]</span> y</div>
-              <div class="out"><span class="check">✓</span> signed v4 attestation &mdash; <span class="dim">Stamp-Verified trailer written</span></div>
+              <div class="out">Sign + merge 'feat/rate-limit' (81d2c9e0) → 'main' (base 9c31d04a)? <span class="dim">[y/N]</span> y</div>
+              <div class="out">merged 'feat/rate-limit' into 'main'</div>
+              <div class="out"><span class="dim">  commit:     3e5f9a1c</span></div>
+              <div class="out"><span class="dim">  signed by:  sha256:a8a63208&hellip;</span></div>
+              <div class="out"><span class="dim">  approvals:  security, standards, product</span></div>
               <div><span class="prompt">$</span> stamp verify HEAD</div>
-              <div class="out"><span class="check">✓</span> attestation valid &middot; 3/3 reviewers &middot; key trusted</div>
+              <div class="out"><span class="check">✓</span> HEAD: attestation valid</div>
+              <div class="out"><span class="dim">  target:     main</span></div>
+              <div class="out"><span class="dim">  base→head:  9c31d04a → 81d2c9e0</span></div>
+              <div class="out"><span class="dim">  signer:     sha256:a8a63208&hellip;</span></div>
             </div>
           </div>
         </div>
 
         <h2 class="section-h" id="why">// backpressure, not a bigger PR</h2>
-        <p>The expensive part &mdash; an AI actually reading the change &mdash; runs <strong>in the agent's loop</strong>, scoped to the diff, not in a git hook. Put a model call in a hook and you've blocked git on a slow review: that's the crawl. Instead the agent calls the reviewers on the diff, gets structured verdicts, fixes, and re-runs &mdash; a pass takes <strong>~5&ndash;30 seconds</strong> on a small change, so it cycles against the reviewer in real time.</p>
+        <p>The expensive part &mdash; an AI actually reading the change &mdash; runs <strong>in the agent's loop</strong>, scoped to the diff, not in a git hook. Put a model call in a hook and you've blocked git on a slow review: that's the crawl. Instead the agent calls the reviewers on the diff, gets structured verdicts, fixes, and re-runs &mdash; a pass takes <strong>~5&ndash;30 seconds</strong> on a small change, so it cycles against the reviewer in real time. And re-reviews get cheaper as you converge: identical (diff, prompt) pairs are served from a verdict cache, and a reviewer that already weighed in re-reads only the delta since its last look.</p>
         <p>What sits at the git boundary is cheap: a <strong>signature check</strong>. The reviewer signs an attestation over the diff when it approves; the pre-receive hook (or a CI check) just verifies that signature &mdash; milliseconds, no model call, no test run. The precommit gate is fast <em>because the thinking already happened upstream, on a tiny diff.</em></p>
 
         <h2 class="section-h" id="split">// AI code review, minus the burden</h2>
@@ -123,7 +140,7 @@
       <!-- CONCEPTS VIEW -->
       <section class="view" data-view="concepts">
         <h2 class="view-title">// concepts</h2>
-        <p class="view-sub">Reviewers are AI personas you control.<br>An attestation is their signed verdict on the diff.<br>The gate stays closed until the attestation exists.<br>Verification re-checks it anywhere, anytime.</p>
+        <p class="view-sub">Reviewers are AI personas you control.<br>An attestation is their signed verdict on the diff.<br>The gate stays closed until the attestation exists.<br>Verification re-checks it anywhere, anytime.<br>A stamp server signs the verdicts, so trust never rests on the operator.</p>
 
         <div class="concept-list">
           <div class="concept" id="c1">
@@ -132,7 +149,9 @@
             <p>AI review personas, defined as plain markdown prompt files at <code>.stamp/reviewers/&lt;name&gt;.md</code>. <code>stamp init</code> scaffolds three &mdash; <code>security</code>, <code>standards</code>, <code>product</code> &mdash; and you edit them to fit your stack and domain. The whole machine contract is one trailing line: <code>VERDICT: approved</code> (or <code>changes_requested</code> / <code>denied</code>). Everything else is prompt engineering you own.</p>
             <div class="demo">
               <div><span class="prompt">$</span> stamp reviewers add performance</div>
-              <div class="out"><span class="check">✓</span> scaffolded .stamp/reviewers/performance.md</div>
+              <div class="out">reviewer "performance" added.</div>
+              <div class="out"><span class="dim">  prompt file: .stamp/reviewers/performance.md</span></div>
+              <div class="out"><span class="dim">  registered in .stamp/config.yml</span></div>
             </div>
           </div>
 
@@ -142,7 +161,8 @@
             <p>A reviewer verdict is signed into a cryptographic attestation bound to the <strong>content</strong> of the diff (via <code>git patch-id</code>). It travels with the change &mdash; a commit trailer on a signed merge, or a <code>refs/stamp/attestations/&lt;patch-id&gt;</code> ref on a PR. Because it's keyed on content, it survives squash, rebase, and merge-commit: the same diff carries the same attestation.</p>
             <div class="demo">
               <div><span class="prompt">$</span> stamp verify HEAD</div>
-              <div class="out"><span class="check">✓</span> attestation valid &middot; signed by trusted key</div>
+              <div class="out"><span class="check">✓</span> HEAD: attestation valid</div>
+              <div class="out"><span class="dim">  signer:  sha256:a8a63208&hellip;</span></div>
             </div>
           </div>
 
@@ -152,7 +172,10 @@
             <p>The gate is the rule that a change can't land until the required reviewers approve. <code>stamp status</code> reports it; <code>stamp merge</code> enforces it before signing. Closed by default &mdash; unreviewed or rejected code simply doesn't have a valid attestation, so nothing downstream accepts it.</p>
             <div class="demo">
               <div><span class="prompt">$</span> stamp status --diff main..HEAD</div>
-              <div class="out"><span class="check">✗</span> gate <span class="dim">closed</span> &mdash; product: changes_requested</div>
+              <div class="out">target: main   base: 9c31d04a → head: f4a7be22</div>
+              <div class="out">  <span class="check">✓</span>  security    <span class="dim">approved</span></div>
+              <div class="out">  <span class="check">✗</span>  product     <span class="dim">changes_requested</span></div>
+              <div class="out">gate: CLOSED</div>
             </div>
           </div>
 
@@ -162,7 +185,24 @@
             <p>Any party with the trusted-keys manifest can re-verify an attestation without re-running the reviewers &mdash; locally with <code>stamp verify</code>, server-side in a pre-receive hook, or in CI via the <code>stamp/verify-attestation@v1</code> GitHub Action. The trust root is a manifest of ed25519 public keys you control; signatures are checked end-to-end.</p>
             <div class="demo">
               <div><span class="prompt">$</span> stamp keys list</div>
-              <div class="out"><span class="cyan">trusted:</span> security-team, release-bot</div>
+              <div class="out">local keypair: ~/.stamp/keys/</div>
+              <div class="out"><span class="dim">  sha256:a8a63208&hellip;</span></div>
+              <div class="out">repo trusted keys: .stamp/trusted-keys/</div>
+              <div class="out"><span class="dim">  sha256:a8a63208&hellip; (you)</span></div>
+            </div>
+          </div>
+
+          <div class="concept" id="c5">
+            <div class="num">[05]</div>
+            <h3>server-attested verdicts</h3>
+            <p>In the trusted shapes, the reviewer LLM runs on a stamp server that holds its own signing key and signs every verdict. The operator never constructs both sides of &ldquo;what the LLM saw&rdquo; and &ldquo;what the LLM said&rdquo; &mdash; forging a review means forging a server signature. And the trust anchors themselves &mdash; reviewer prompts, the trusted-keys manifest, <code>path_rules</code> &mdash; can't change without admin counter-signatures.</p>
+            <div class="demo">
+              <div><span class="prompt">$</span> stamp admin list-keys</div>
+              <div class="out">trusted-keys manifest &mdash; 2 entries</div>
+              <div class="out">  matt</div>
+              <div class="out"><span class="dim">    capabilities: [admin, operator]</span></div>
+              <div class="out">  stamp-server</div>
+              <div class="out"><span class="dim">    capabilities: [server]</span></div>
             </div>
           </div>
         </div>
@@ -174,7 +214,7 @@
           <div class="concept" id="shape-server">
             <div class="num">[A]</div>
             <h3>server-gated <span class="dim">— strongest</span></h3>
-            <p>A stamp server you deployed (git + sshd) signs every verdict and runs a <strong>pre-receive hook</strong> that rejects unstamped pushes before <code>main</code> moves. Nothing unsigned reaches the remote. The fastest iteration loop &mdash; sign locally, push, done &mdash; and the only shape with true server-side enforcement.</p>
+            <p>A stamp server you deployed (git + sshd) signs every verdict and runs a <strong>pre-receive hook</strong> that rejects unstamped pushes before <code>main</code> moves. Nothing unsigned reaches the remote. <code>stamp provision &lt;name&gt;</code> sets a repo up in one command &mdash; bare repo, clone, reviewers, optional locked GitHub mirror. The fastest iteration loop &mdash; sign locally, push, done &mdash; and the only shape with true server-side enforcement.</p>
           </div>
 
           <div class="concept" id="shape-github">
@@ -203,7 +243,7 @@
                                   |  pre-receive hook · CI    |&lt;──────────────────+ commit / PR
                                   |  check · stamp verify     |
                                   +---------------------------+</pre>
-        <p>The reviewers are AI personas you author. The attestation is the only thing that needs to be trusted downstream &mdash; and it's verifiable by signature, so the verifier never re-runs the model.</p>
+        <p>The reviewers are AI personas you author. In the trusted shapes the verdicts they return are signed by the stamp server, not the operator. The attestation is the only thing that needs to be trusted downstream &mdash; and it's verifiable by signature, so the verifier never re-runs the model.</p>
       </section>
 
       <!-- INSTALL VIEW -->
@@ -212,22 +252,20 @@
         <p class="view-sub">Install once, then pick the deployment shape that matches your trust model.</p>
 
         <div class="terminal"><span class="prompt">$</span>npm install -g @openthink/stamp</div>
-        <p class="note"><code>stamp init</code> scaffolds <code>.stamp/</code> (config + three starter reviewers), generates an ed25519 keypair, and writes an <code>AGENTS.md</code> at the repo root telling your agents how to use the flow. Reviewers run on the <a href="https://www.npmjs.com/package/@anthropic-ai/claude-agent-sdk">Claude Agent SDK</a> and require a Claude subscription.</p>
+        <p class="note"><code>stamp init</code> scaffolds <code>.stamp/</code> (config + three starter reviewers), generates an ed25519 keypair, and writes an <code>AGENTS.md</code> at the repo root telling your agents how to use the flow. Reviewers run on the <a href="https://www.npmjs.com/package/@anthropic-ai/claude-agent-sdk">Claude Agent SDK</a> &mdash; locally in the advisory shapes, on your stamp server in the trusted ones &mdash; and require a Claude subscription. Per-reviewer model defaults live in <code>~/.stamp/config.yml</code> (<code>stamp config reviewers show</code>).</p>
 
         <ol class="steps">
           <li id="s1">
             <h3>Shape A — server-gated <span class="dim">(self-hosted, strongest)</span></h3>
-            <div class="terminal"><span class="prompt">$</span>ssh stamp new-stamp-repo myproject    <span class="dim"># provision bare repo + hook</span></div>
-            <div class="terminal"><span class="prompt">$</span>git clone ssh://stamp/srv/git/myproject.git</div>
-            <div class="terminal"><span class="prompt">$</span>cd myproject &amp;&amp; stamp bootstrap        <span class="dim"># install real reviewers + trusted-keys, push</span></div>
-            <p class="note">Per change: <code>stamp review</code> → <code>stamp merge &lt;branch&gt; --into main</code> → <code>stamp push main</code>. The pre-receive hook verifies the attestation server-side and rejects anything unsigned. See the <a href="https://github.com/OpenThinkAi/stamp-cli/blob/main/docs/quickstart-server.md">server quickstart</a> for the Railway walkthrough.</p>
+            <div class="terminal"><span class="prompt">$</span>stamp provision myproject --org my-github-org</div>
+            <p class="note">One command: provisions the bare repo on your stamp server (<code>~/.stamp/server.yml</code>), clones it, lands the three starter reviewers + trusted-keys manifest via <code>stamp bootstrap</code>, and optionally creates a GitHub mirror locked by a Ruleset (skip with <code>--no-mirror</code>). Per change: <code>stamp review</code> → <code>stamp merge &lt;branch&gt; --into main</code> → <code>stamp push main</code>. The pre-receive hook verifies the attestation server-side and rejects anything unsigned. Onboard teammate #2 with <code>stamp invites mint &lt;name&gt;</code> / <code>stamp invites accept &lt;url&gt;</code>. See the <a href="https://github.com/OpenThinkAi/stamp-cli/blob/main/docs/quickstart-server.md">server quickstart</a> for the Railway walkthrough.</p>
           </li>
           <li id="s2">
             <h3>Shape B — github-primary <span class="dim">(PR + CI check)</span></h3>
             <div class="terminal"><span class="prompt">$</span>cd myproject &amp;&amp; stamp init           <span class="dim"># scaffolds .stamp/ + .github/workflows/stamp-verify.yml</span></div>
             <div class="terminal"><span class="prompt">$</span>git add .stamp .github &amp;&amp; git commit -m "stamp: scaffold PR verification"</div>
             <div class="terminal"><span class="prompt">$</span>git push origin main</div>
-            <p class="note">In GitHub: <strong>Settings → Branches → Require status checks → add <code>stamp verify</code></strong>. Per change: <code>stamp review --diff main..HEAD</code> → <code>stamp attest --into main --push origin</code> → open the PR → the check goes green → a human clicks merge. For server-signed verdicts without code transfer, use <code>stamp init --migrate-to-server-attested --server &lt;host:port&gt;</code>.</p>
+            <p class="note">In GitHub: <strong>Settings → Branches → Require status checks → add <code>stamp verify</code></strong>. Per change: <code>stamp review --diff main..HEAD</code> (the attestation auto-mints the moment the gate opens) → <code>stamp attest --into main --push origin</code> to push branch + attestation ref → open the PR → the check goes green → a human clicks merge. For server-signed verdicts without code transfer, use <code>stamp init --migrate-to-server-attested --server &lt;host:port&gt;</code>.</p>
           </li>
           <li id="s3">
             <h3>Shape C — local-only <span class="dim">(fastest, no trust)</span></h3>
@@ -244,23 +282,32 @@
 
         <h2 class="section-h" id="commands">// core commands</h2>
         <pre class="arch-ascii">stamp init [--mode &lt;shape&gt;]              Scaffold .stamp/ + keypair + AGENTS.md
+stamp provision [name]                   One-command server-gated setup: bare repo + clone
+                                         + bootstrap (+ GitHub mirror w/ locked Ruleset)
 stamp bootstrap                          Replace placeholder reviewers on a fresh server repo
-stamp review --diff &lt;revspec&gt;            Run all reviewers in parallel
+stamp review --diff &lt;revspec&gt;            Run all reviewers in parallel (verdict cache +
+                                         delta-scoped re-reviews; auto-mints on gate-open)
 stamp review --diff &lt;rev&gt; --only &lt;name&gt;  Run a single reviewer
 stamp review --plan --diff &lt;rev&gt;         Emit a plan for local-only fan-out (no attestation)
 stamp status --diff &lt;revspec&gt;            Gate check (exit 0 open, 1 closed)
-stamp merge &lt;branch&gt; --into &lt;target&gt;     Confirm → merge → sign attestation
+stamp merge &lt;branch&gt; --into &lt;target&gt;     Confirm → merge → sign attestation (-y skips prompt)
 stamp attest [&lt;branch&gt;] --into &lt;t&gt; --push &lt;remote&gt;   Sign + push attestation ref (PR mode)
-stamp push &lt;target&gt;                      Plain git push; hook stderr forwarded
+stamp push &lt;target&gt;                      Push to the stamp server; hook stderr forwarded
 stamp verify &lt;sha&gt;                       Verify a merge commit's attestation locally
 stamp verify-pr &lt;head&gt; --base &lt;ref&gt; --into &lt;branch&gt;  Consumer side of the GH Action
 
 stamp reviewers list|add|edit|test|show|remove|fetch|verify   Manage review personas
-stamp keys generate|list|export|trust   ed25519 key management
-stamp admin list-keys|add-key|revoke|sign   Trust-anchor administration (server-gated)
-stamp invites|users|trust ...           Membership management (server-gated)
+stamp keys generate|list|export|trust    ed25519 key management
+stamp admin sign|add-key|revoke|list-keys   Trust-anchor administration (server-gated)
+stamp invites mint|accept                Single-use teammate onboarding tokens
+stamp users / stamp trust ...            Membership + per-repo signing trust
+stamp server / stamp server-repos        ~/.stamp/server.yml + bare repos on the server
+stamp config reviewers show|set          Per-user reviewer model config (Sonnet defaults)
+stamp manifest sign|verify               Signed reviewer-persona manifests
+stamp pr / stamp peer                    Opt-in peer-agentic review over GitHub PRs
 
 stamp log [&lt;sha&gt;]                        First-parent history w/ attestation summary
+stamp prune --older-than &lt;30d&gt;           Trim review history from local state.db
 stamp ui                                 Interactive TUI: list → detail → review prose
 stamp update                             Update to latest version</pre>
 
@@ -270,7 +317,10 @@ stamp update                             Update to latest version</pre>
           <li><span class="link-label">.stamp/reviewers/*.md</span>your review personas (prompt files)</li>
           <li><span class="link-label">.stamp/trusted-keys/</span><code>manifest.yml</code> + pubkeys &mdash; the trust root</li>
           <li><span class="link-label">.git/stamp/state.db</span>local SQLite: review verdicts, never committed</li>
+          <li><span class="link-label">.git/stamp/failed-runs/</span>structured turn traces when a reviewer fails</li>
           <li><span class="link-label">~/.stamp/keys/</span><code>ed25519</code> / <code>ed25519.pub</code> &mdash; your signing key</li>
+          <li><span class="link-label">~/.stamp/server.yml</span>your stamp server endpoint (provision, server-repos)</li>
+          <li><span class="link-label">~/.stamp/config.yml</span>per-user knobs: reviewer models, uncommitted</li>
           <li><span class="link-label">.github/workflows/</span><code>stamp-verify.yml</code> &mdash; PR-check verifier (Shape B)</li>
           <li><span class="link-label">AGENTS.md</span>shape-aware guidance written into the repo root</li>
         </ul>
@@ -282,6 +332,10 @@ stamp update                             Update to latest version</pre>
           <li><span class="link-label">design</span><a href="https://github.com/OpenThinkAi/stamp-cli/blob/main/DESIGN.md">DESIGN.md &mdash; spec + security model</a></li>
           <li><span class="link-label">personas</span><a href="https://github.com/OpenThinkAi/stamp-cli/blob/main/docs/personas.md">writing reviewer prompts</a></li>
           <li><span class="link-label">threat model</span><a href="https://github.com/OpenThinkAi/stamp-cli/blob/main/docs/threat-model.md">who attacks, how, what defends</a></li>
+          <li><span class="link-label">quickstart</span><a href="https://github.com/OpenThinkAi/stamp-cli/blob/main/docs/quickstart-server.md">server-gated from zero (Railway walkthrough)</a></li>
+          <li><span class="link-label">local-only</span><a href="https://github.com/OpenThinkAi/stamp-cli/blob/main/docs/local-only-mode.md">the no-trust iteration mode's contract</a></li>
+          <li><span class="link-label">troubleshooting</span><a href="https://github.com/OpenThinkAi/stamp-cli/blob/main/docs/troubleshooting.md">runbook for when stamp blocks you</a></li>
+          <li><span class="link-label">roadmap</span><a href="https://github.com/OpenThinkAi/stamp-cli/blob/main/docs/ROADMAP.md">what's shipped + what's next</a></li>
           <li><span class="link-label">issues</span><a href="https://github.com/OpenThinkAi/stamp-cli/issues">github.com/OpenThinkAi/stamp-cli/issues</a></li>
           <li><span class="link-label">license</span>MIT</li>
         </ul>
@@ -353,10 +407,11 @@ stamp update                             Update to latest version</pre>
       concepts: {
         groups: [
           { label: 'concepts', items: [
-            { label: '01 reviewers',    href: '#c1' },
-            { label: '02 attestation',  href: '#c2' },
-            { label: '03 the gate',     href: '#c3' },
-            { label: '04 verification', href: '#c4' },
+            { label: '01 reviewers',       href: '#c1' },
+            { label: '02 attestation',     href: '#c2' },
+            { label: '03 the gate',        href: '#c3' },
+            { label: '04 verification',    href: '#c4' },
+            { label: '05 server-attested', href: '#c5' },
           ]},
           { label: 'deployment shapes', items: [
             { label: 'A server-gated',   href: '#shape-server' },
