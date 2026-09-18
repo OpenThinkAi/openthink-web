@@ -216,7 +216,7 @@
 |                          |      |  ~/.think/index/         |      |  Drive / any folder      |
 |                          |      |     &lt;cortex&gt;.db          |      |                          |
 +--------------------------+      +--------------------------+      +--------------------------+</pre>
-        <p>Local-first by design. All reads and writes go to local SQLite. Pending events never leave the machine &mdash; only memories land in the cortex folder and propagate across machines. No server, no relay; the folder is the propagation layer.</p>
+        <p>Local-first by design. All reads and writes go to local SQLite first. Memories, events and retros all propagate to your other machines through the cortex folder. No server, no relay; the folder is the propagation layer.</p>
       </section>
 
       <!-- INSTALL VIEW -->
@@ -229,15 +229,15 @@
             <h3>Install &amp; initialize</h3>
             <div class="terminal"><span class="prompt">$</span>npm install -g @openthink/think</div>
             <div class="terminal"><span class="prompt">$</span>think init</div>
-            <p class="note">Requires Node 22.5+. <code>think init</code> writes auto-logging instructions into your project's CLAUDE.md &mdash; your agents start logging work immediately. The curator and summary features use the <a href="https://www.npmjs.com/package/@anthropic-ai/claude-agent-sdk">Claude Agent SDK</a> and require a Claude subscription.</p>
-            <p class="note"><strong>Upgrading from v2?</strong> v3 reads v2 storage. First launch reindexes existing memories into the vector store automatically &mdash; no manual migration step.</p>
+            <p class="note">Requires Node 22.5+. <code>think init</code> writes auto-logging instructions into your project's CLAUDE.md &mdash; your agents start logging work immediately. The summary feature uses the <a href="https://www.npmjs.com/package/@anthropic-ai/claude-agent-sdk">Claude Agent SDK</a> and requires a Claude subscription.</p>
+            <p class="note"><strong>Already running think?</strong> <code>think update</code> installs the latest version and crosses majors on its own &mdash; first daemon start after upgrading migrates anything stranded and refreshes your instruction blocks automatically, no manual step.</p>
           </li>
           <li id="s2">
             <h3>Point cortex at a folder</h3>
             <div class="terminal"><span class="prompt">$</span>think cortex setup --fs ~/Dropbox/think-cortex</div>
             <div class="terminal"><span class="prompt">$</span>think cortex create personal</div>
             <p class="note">A cortex is your AI's memory workspace. Pass <code>--fs</code> a path inside any sync tool you already use (iCloud, Dropbox, Google Drive, Syncthing) and the same memories will land on every machine you own. The folder is created if it doesn't exist. Skip <code>--fs</code> for offline-only.</p>
-            <p class="note"><strong>Already on a git-backed setup?</strong> <code>think cortex setup &lt;git-remote-url&gt;</code> is still supported and existing setups keep working unchanged &mdash; <code>--fs</code> is just the recommended path for new ones.</p>
+            <p class="note"><strong>Prefer a git remote?</strong> <code>think cortex setup &lt;git-remote-url&gt;</code> is an equally first-class backend &mdash; it's what powers team cortexes and is what the daemon's push/pull loop is built on. Pick whichever fits: a synced folder with <code>--fs</code>, or a git remote for shared history across a team.</p>
           </li>
           <li id="s3">
             <h3>You're done</h3>
@@ -254,57 +254,121 @@
         <p class="view-sub">Reference, source, and where to find help.</p>
 
         <h2 class="section-h" id="commands">// all commands</h2>
-        <pre class="arch-ascii">think sync &lt;message&gt;           Record a memory (-e &lt;key&gt; to tag an episode)
-think recall &lt;query&gt;           Search memories (semantic + keyword)
-think memory                   Show memories (--history for timeline)
-think list                     List entries (--week, --since, --category)
-think summary                  AI summary (--raw for plain text)
-think delete                   Soft-delete entries
+        <pre class="arch-ascii">think sync &lt;message&gt;                          Record a memory entry to the active cortex (or local think.db)
 
-think cortex setup [--fs &lt;path&gt; | &lt;repo&gt;]   Configure backend (or no args for offline)
-think cortex create &lt;name&gt;     Create a cortex
-think cortex list              Show all cortexes
-think cortex switch &lt;name&gt;     Set active cortex
-think cortex current           Show active cortex
-think cortex push              Push local memories to the folder
-think cortex pull              Pull memories from the folder
-think cortex sync              Push + pull
-think cortex status            Show sync state
+think list                                    List entries with optional filters
 
-think retro &lt;content&gt;          Record a durable repo-scoped lesson
-think brief [query]            Task-start brief: context + repo retros
-think event &lt;message&gt;          Record a long-term event (deploy, decision, milestone)
-think long-term                Manage long-term memory events
-think dashboard                Status dashboard with an AI prompt box
-think pull &lt;cortex&gt;            Read memories from another cortex
+think summary                                 Generate a summary of entries (AI-powered or raw)
 
-think daemon                   Manage the resident daemon (start/stop/status)
-think reindex [cortex]         Rebuild the vector index from the raw log
-think hook                     Manage the Claude Code hook (install/uninstall)
-think mcp                      Manage the MCP server (install/uninstall)
+think delete                                  Soft-delete entries from the active cortex (tombstoned, propagated to peers)
 
-think curate                   Promote pending events into memories (--dry-run)
-think curate --episode &lt;key&gt;   Curate an episode into a narrative memory
-think curate --consolidate     Compress older memories into a summary
-think monitor                  Show what got promoted vs dropped
-think curator edit / show      Personal curator guidance
+think supersession                            Inspect and revert supersession links (hidden entries can be restored)
+think supersession list                       List superseded (hidden) entries in the active cortex, most recent first
+think supersession show &lt;id&gt;                  Show the supersession state of an entry: what hid it, and what it hid
+think supersession revert &lt;id&gt;                Clear a supersession link, restoring the entry to active recall on this machine
 
-think pause / resume           Suppress / re-enable writes
-think init                     Set up CLAUDE.md for auto-logging
-think migrate-data             One-time import of git memories into SQLite
-think log &lt;message&gt;            Log a pending event (deprecated &mdash; use sync)
-think serve                    Boot the proxy for external event sources
-think subscribe                Manage external-source subscriptions
-think export / import          Sync bundles between devices
-think audit                    Show sync audit log
-think config show / set        View or update configuration
-think update                   Update to latest version</pre>
+think export                                  Export entries as a sync bundle (file-based sync)
+
+think import &lt;file&gt;                           Import a sync bundle from another device
+
+think init                                    Set up CLAUDE.md (and AGENTS.md) for auto-logging and retros
+
+think audit                                   Show sync audit log &mdash; what data was sent or received
+think audit prune                             Drop audit entries older than the given date (--before &lt;iso-date&gt;)
+
+think cortex                                  Manage cortexes (team memory workspaces)
+think cortex setup [repo]                     Configure a sync backend for cortex storage (git or local-fs)
+think cortex create &lt;name&gt;                    Create a new cortex
+think cortex list                             Show all cortexes
+think cortex switch &lt;name&gt;                    Set the active cortex
+think cortex current                          Show the active cortex
+think cortex push                             Push local memories to remote
+think cortex pull                             Pull remote memories to local
+think cortex sync                             Sync memories with remote (pull + push)
+think cortex status                           Show sync status for the active cortex
+think cortex migrate                          Migrate cortex storage from git to a local folder
+think cortex migrate-layout [cortex]          One-time: nest cortex files under &lt;branch&gt;/ for every branch
+
+think recall &lt;query&gt;                          Search memories, events and retros
+
+think memory                                  Show current memories from local store
+think memory add &lt;message&gt;                    Add a memory directly, bypassing curation
+
+think pull &lt;cortex&gt;                           Read another cortex's memories from local store
+
+think pause                                   Pause event creation &mdash; think sync will silently skip until resumed
+
+think resume                                  Resume event creation after a pause
+
+think config                                  View or update think configuration
+think config show                             Print current configuration
+think config set &lt;key&gt; &lt;value&gt;                Set a configuration value
+
+think update                                  Update think to the latest version (restarts the daemon if needed)
+
+think migrate-engrams                         Re-submit entries stranded in the legacy pre-daemon table
+
+think long-term                               Manage long-term memory events (durable decisions, transitions, milestones)
+think long-term backfill                      One-time extraction of long-term events from historical memories
+think long-term list                          List long-term events chronologically
+think long-term record                        Manually record a long-term event (interactive)
+
+think serve                                   Boot the open-think proxy server (env-driven; see `docs/serve.md`)
+think serve status                            Print the persisted proxy state without starting the server
+think serve subscribe &lt;kind&gt; &lt;pattern&gt;        Add a connector subscription to the running proxy
+think serve unsubscribe &lt;kind&gt; &lt;pattern&gt;      Remove a subscription from the running proxy
+think serve creds                             Manage encrypted source credentials stored in the proxy vault.
+think serve creds add &lt;kind&gt; &lt;pattern&gt;        Store or replace a credential for a proxy subscription
+
+think subscribe                               Subscribe to external event sources via the open-think proxy
+think subscribe configure                     Set the proxy URL and bearer token used by other subscribe commands
+think subscribe add &lt;kind&gt; &lt;pattern&gt;          Create a subscription on the proxy (e.g. `think subscribe add mock 3`)
+think subscribe list                          List subscriptions registered on the proxy
+think subscribe remove &lt;id&gt;                   Delete a subscription on the proxy (cascades to events/credential)
+think subscribe set-credential &lt;id&gt;           Store an encrypted credential for a subscription (stdin preferred)
+think subscribe poll                          [DEPRECATED] No-op &mdash; use `think pull &lt;team-cortex&gt;` instead
+think subscribe install-agent                 Install a LaunchAgent that polls on session load + on a timer
+think subscribe disable                       Remove the auto-subscribe LaunchAgent for this workspace
+think subscribe status                        Show auto-subscribe scheduler status
+think subscribe show                          Show the configured proxy URL (token is redacted)
+think subscribe redact-set &lt;id&gt; [paths...]    Set per-subscription JSONPath-subset redact selectors (e.g. `$.user.email`)
+
+think retro &lt;content&gt;                         Record a durable lesson onto your home cortex, tagged by repo context
+
+think retro-migrate                           Fold legacy per-repo cortices into your home cortex (dry-run by default)
+
+think event &lt;message&gt;                         Record a notable event (milestone, deploy, decision, incident)
+
+think curate-retros                           Run retro curator: dedupe, promote, and relegate retros (no deletion)
+
+think brief [query]                           Task-start brief: home-cortex context + retros scoped to this repo
+
+think daemon                                  Manage the think resident daemon process
+think daemon start                            Start the think daemon in the background (no-op if already running)
+think daemon stop                             Send the shutdown RPC to the daemon and wait up to 5s for it to exit.
+think daemon status                           Print the daemon's running state, pid, socket path, and version
+
+think reindex [cortex]                        Rebuild the search index for one or all cortexes from the raw log
+
+think hook                                    Manage Claude Code hook integration for think.
+think hook install                            Register the think UserPromptSubmit hook in Claude Code settings.
+think hook uninstall                          Remove the think UserPromptSubmit hook from Claude Code settings.
+
+think mcp                                     Manage the think MCP server (start in stdio mode, or install/uninstall).
+think mcp install                             Register the think MCP server in Claude Code MCP config.
+think mcp uninstall                           Remove the think MCP server from Claude Code MCP config.
+
+think retro-usage                             Open a report of how your retros surface in recall/brief
+
+think dashboard                               Open a status dashboard (today's work) with an AI prompt box
+
+think doctor                                  Report this machine's think install health, and repair what is safe</pre>
 
         <h2 class="section-h" id="links">// links</h2>
         <ul class="link-list">
           <li><span class="link-label">github</span><a href="https://github.com/OpenThinkAi/think-cli">github.com/OpenThinkAi/think-cli</a></li>
           <li><span class="link-label">npm</span><a href="https://www.npmjs.com/package/@openthink/think">npmjs.com/package/@openthink/think</a></li>
-          <li><span class="link-label">v3 design</span><a href="https://github.com/OpenThinkAi/think-cli/blob/main/docs/think-v3.md">github.com/OpenThinkAi/think-cli/blob/main/docs/think-v3.md</a></li>
+          <li><span class="link-label">architecture</span><a href="https://github.com/OpenThinkAi/think-cli/blob/main/docs/architecture.md">github.com/OpenThinkAi/think-cli/blob/main/docs/architecture.md</a></li>
           <li><span class="link-label">issues</span><a href="https://github.com/OpenThinkAi/think-cli/issues">github.com/OpenThinkAi/think-cli/issues</a></li>
           <li><span class="link-label">license</span>MIT</li>
         </ul>
@@ -314,7 +378,7 @@ think update                   Update to latest version</pre>
           <li><span class="link-label">~/.think/</span><span>data directory (override with <code>$THINK_HOME</code>)</span></li>
           <li><span class="link-label">index/&lt;cortex&gt;.db</span>per-cortex SQLite (memories, events, vector index, sync state)</li>
           <li><span class="link-label">daemon.sock</span>Unix socket the CLI uses to talk to the resident daemon</li>
-          <li><span class="link-label">curator.md</span>personal curator guidance</li>
+          <li><span class="link-label">repo/</span>git-backed canonical log the index is rebuilt from (<code>think reindex</code>)</li>
           <li><span class="link-label">cortex folder</span>JSONL files for synced memories (path you set with <code>--fs</code>)</li>
           <li><span class="link-label">~/.config/think/</span>config.json</li>
         </ul>
@@ -415,7 +479,7 @@ think update                   Update to latest version</pre>
           { label: 'links', items: [
             { label: 'github', href: 'https://github.com/OpenThinkAi/think-cli', external: true },
             { label: 'npm', href: 'https://www.npmjs.com/package/@openthink/think', external: true },
-            { label: 'v3 design doc', href: 'https://github.com/OpenThinkAi/think-cli/blob/main/docs/think-v3.md', external: true },
+            { label: 'architecture', href: 'https://github.com/OpenThinkAi/think-cli/blob/main/docs/architecture.md', external: true },
             { label: 'issues', href: 'https://github.com/OpenThinkAi/think-cli/issues', external: true },
           ]},
         ],

@@ -46,15 +46,9 @@ opening `index.html` directly via `file://` won't resolve them.
 
 ## Cutover
 
-The CNAME for `openthink.dev` currently points at `OpenThinkAi/think-cli` (served
-from `think-cli/docs/`). When this site is ready:
-
-1. Push this repo to `OpenThinkAi/openthink-web`.
-2. Add a `CNAME` file containing `openthink.dev`.
-3. Enable GitHub Pages on the `main` branch.
-4. Update DNS / verify the new site renders at the Pages URL.
-5. Remove `docs/` from `OpenThinkAi/think-cli` (or leave it as legacy with no
-   CNAME) so the domain only resolves to the new repo.
+Done. `openthink.dev` is served by GitHub Pages from this repo's `main` branch
+(the `CNAME` file at the repo root), and `OpenThinkAi/think-cli` no longer
+carries a `docs/` Pages source or CNAME — the domain resolves only here.
 
 ## License
 
