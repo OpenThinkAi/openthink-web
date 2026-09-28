@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>audit — whole-codebase audits · openthink</title>
-<meta name="description" content="Composable audit specs for cross-cutting passes: security, perf, dead code, doc drift.">
+<title>audit — is it safe to run? · openthink</title>
+<meta name="description" content="oaudit reads a repo, folder, or agent skill and tells you what it actually does, before you install or run it.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -22,7 +22,7 @@
     <a href="../ui-leaf/">ui-leaf</a>
     <a href="../audit/" class="current">audit</a>
     <span class="grow"></span>
-    <span class="meta">@openthink/audit · MIT</span>
+    <span class="meta">@openthink/audit · MIT / Apache-2.0</span>
   </div>
 
   <div class="layout full">
@@ -31,24 +31,46 @@
       <section class="view active" data-view="home">
         <div class="hero">
           <div class="hero-copy">
-            <div class="badge"><span class="dot"></span>Rust · open source · MIT</div>
-            <h1>whole-codebase<br> <span class="accent">audits</span>.</h1>
-            <p class="lead">Composable audit specs for cross-cutting passes &mdash; security, perf, dead code, doc drift. Spec docs live in trusted/untrusted pairs; one long-lived agent per pass. <em>Not</em> a diff or PR reviewer &mdash; this is for sweeping the whole tree on demand.</p>
+            <div class="badge"><span class="dot"></span><span id="version-badge">v0.0.0</span> · open source</div>
+            <h1>is it safe<br> <span class="accent">to run?</span></h1>
+            <p class="lead">oaudit reads a repo, a folder, or an agent skill and tells you what it actually does &mdash; before you install it or run it.</p>
           </div>
           <div class="hero-install">
-            <div class="install-line"><span class="prompt">$</span>cargo install open-audit</div>
-            <div class="install-note">binary: <code>oaudit</code> · written in Rust · drives a long-lived <code>claude</code> subprocess</div>
+            <div class="install-line"><span class="prompt">$</span>npm install -g @openthink/audit</div>
+            <div class="install-note">binary: <code>oaudit</code> · runs on your Claude Code login</div>
           </div>
         </div>
 
-        <h2 class="section-h">// page in progress</h2>
-        <p>Full concepts, install, and docs pages are being written. For now, head to the <a href="https://github.com/OpenThinkAi/open-audit">github repo</a> for the README and CLI surface, or back to the <a href="../">suite homepage</a>.</p>
+        <div class="demo-flow">
+          <div class="demo-step">
+            <div class="demo-label">checking a skill before you install it</div>
+            <div class="demo-terminal">
+              <div><span class="prompt">$</span> oaudit file ./pdf-skill --against untrusted/agent-skill --format human</div>
+              <div class="out">[CRITICAL] SKILL.md setup step reads AWS and GitHub credentials</div>
+              <div class="out">           and tells the agent not to mention it <span class="dim">(SKILL.md:8)</span></div>
+              <div class="out">[HIGH] instructs the agent to act without telling the user <span class="dim">(SKILL.md:13)</span></div>
+              <div class="out"><span class="dim">gate: high or critical → exit 1</span></div>
+            </div>
+          </div>
+        </div>
+
+        <h2 class="section-h" id="how">// how it works</h2>
+        <p><strong>It reads, it never runs.</strong> Files go to Claude with no tools, no settings and no hooks, so the code being audited can't make it do anything.</p>
+        <p><strong>It judges against the stated purpose.</strong> A test skill that starts a server is fine. One that also reads <code>~/.aws</code> isn't.</p>
+        <p><strong>It can gate CI.</strong> Exit code 1 on anything high or critical.</p>
+
+        <h2 class="section-h" id="start">// try it</h2>
+        <div class="demo-terminal">
+          <div><span class="prompt">$</span> oaudit repo ./some-repo --format human</div>
+          <div><span class="prompt">$</span> oaudit file ./some-skill --against untrusted/agent-skill --format human</div>
+        </div>
+        <p>Needs the <code>claude</code> CLI, signed in. Everything else is in the <a href="https://github.com/OpenThinkAi/open-audit#readme">README</a>.</p>
       </section>
     </main>
   </div>
 
   <div class="statusbar">
-    <div class="left"><span class="status-dot"></span>audit · in progress</div>
+    <div class="left"><span class="status-dot"></span>audit · ready</div>
     <div class="spacer"></div>
     <div class="right">
       <span><span class="key-pill">g</span>github</span>
@@ -73,7 +95,8 @@
 <script>
   window.SITE_CONFIG = {
     tool: 'audit',
-    githubUrl: 'https://github.com/OpenThinkAi/open-audit'
+    githubUrl: 'https://github.com/OpenThinkAi/open-audit',
+    npmPackage: '@openthink/audit'
   };
 </script>
 <script src="../app.js"></script>
