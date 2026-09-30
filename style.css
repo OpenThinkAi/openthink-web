@@ -644,6 +644,7 @@ ul.link-list .link-label {
   .hero-install { flex: none; }
   .hero-install .install-line,
   .hero-install .install-note { margin-inline: 0; }
+  .hero-install .install-line.wrap { white-space: normal; overflow-wrap: anywhere; }
   .layout { grid-template-columns: 1fr; }
   .pane + .pane { border-left: 1px solid var(--border); border-top: none; }
   .main-pane { padding: 1.5rem 1.25rem; }

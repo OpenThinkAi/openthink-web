@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>pm — local-first tickets for agents · openthink</title>
+<meta name="description" content="pm is a local-first, relational ticket CLI for agents and humans: SQLite plus an append-only op log, --json on every read, stable exit codes, optional self-hosted sync.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="app">
+  <div class="suitebar">
+    <span class="brand">openthink</span>
+    <span class="sep">/</span>
+    <a href="../">home</a>
+    <span class="sep">·</span>
+    <a href="../think/">think</a>
+    <a href="../stamp/">stamp</a>
+    <a href="../ui-leaf/">ui-leaf</a>
+    <a href="../audit/">audit</a>
+    <a href="../pm/" class="current">pm</a>
+    <span class="grow"></span>
+    <span class="meta">pm · MIT / Apache-2.0</span>
+  </div>
+
+  <div class="layout full">
+    <main class="pane main-pane">
+      <div class="pane-title">[<span class="key">M</span>]AIN</div>
+      <section class="view active" data-view="home">
+        <div class="hero">
+          <div class="hero-copy">
+            <div class="badge"><span class="dot"></span>pre-release · open source</div>
+            <h1>tickets agents<br> <span class="accent">can drive.</span></h1>
+            <p class="lead">Local-first tickets in SQLite with an append-only op log. No prompts, <code>--json</code> everywhere, stable exit codes.</p>
+          </div>
+          <div class="hero-install">
+            <div class="install-line wrap"><span class="prompt">$</span>cargo install --locked --git https://github.com/OpenThinkAi/pm pm</div>
+            <div class="install-note">not on npm yet · Rust ≥ 1.85</div>
+          </div>
+        </div>
+
+        <div class="demo-flow">
+          <div class="demo-step">
+            <div class="demo-label">file work, order it</div>
+            <div class="demo-terminal">
+              <div><span class="prompt">$</span> pm new --title "Add retry to the sync client"</div>
+              <div class="out">PM-1</div>
+              <div><span class="prompt">$</span> pm new --title "Write release notes"</div>
+              <div class="out">PM-2</div>
+              <div><span class="prompt">$</span> pm relate PM-2 --blocked-by PM-1</div>
+              <div class="out">PM-2</div>
+              <div><span class="prompt">$</span> pm graph</div>
+              <div class="out">wave 0: PM-1</div>
+              <div class="out">wave 1: PM-2</div>
+              <div class="out">done: false</div>
+            </div>
+          </div>
+          <div class="demo-step">
+            <div class="demo-label">two agents, one ticket</div>
+            <div class="demo-terminal">
+              <div><span class="prompt">$</span> PM_ACTOR=agent-a pm claim --ready</div>
+              <div class="out">PM-1</div>
+              <div><span class="prompt">$</span> PM_ACTOR=agent-b pm claim PM-1</div>
+              <div class="out">pm: PM-1 is taken by agent-a (since 2026-09-30 20:01 UTC) …</div>
+              <div class="out"><span class="dim">exit 75 → pick another</span></div>
+            </div>
+          </div>
+        </div>
+
+        <h2 class="section-h" id="how">// how it works</h2>
+        <p><strong>The log is the database.</strong> Tables replay from the op log; concurrent edits merge (last-writer-wins fields, label sets, Loro text).</p>
+        <p><strong>Built to be scripted.</strong> <code>pm ready</code> is the work queue; exit <code>75</code> means someone else took it.</p>
+        <p><strong>Sync is optional.</strong> A self-hosted hub syncs machines and decides claims first-come. <code>pm app</code> opens a board.</p>
+        <p>Every verb and <code>--json</code> shape: <a href="https://github.com/OpenThinkAi/pm/blob/main/docs/cli-contract.md">CLI contract</a> · <a href="https://github.com/OpenThinkAi/pm#readme">README</a>.</p>
+      </section>
+    </main>
+  </div>
+
+  <div class="statusbar">
+    <div class="left"><span class="status-dot"></span>pm · ready</div>
+    <div class="spacer"></div>
+    <div class="right">
+      <span><span class="key-pill">g</span>github</span>
+      <span><span class="key-pill">?</span>help</span>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="help-modal" hidden>
+  <div class="modal-pane">
+    <div class="pane-title">[<span class="key">?</span>] HELP</div>
+    <button class="modal-close" aria-label="close">×</button>
+    <h3>Keyboard shortcuts</h3>
+    <table class="help-table">
+      <tr><td><span class="key-pill">g</span></td><td>open github</td></tr>
+      <tr><td><span class="key-pill">?</span></td><td>toggle this help</td></tr>
+      <tr><td><span class="key-pill">esc</span></td><td>close</td></tr>
+    </table>
+  </div>
+</div>
+
+<script>
+  // No npmPackage yet: @openthink/pm isn't published. Add it (and a
+  // version-badge span in the hero) once the first npm release lands.
+  window.SITE_CONFIG = {
+    tool: 'pm',
+    githubUrl: 'https://github.com/OpenThinkAi/pm'
+  };
+</script>
+<script src="../app.js"></script>
+</body>
+</html>
