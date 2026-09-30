@@ -34,11 +34,11 @@
           <div class="hero-copy">
             <div class="badge"><span class="dot"></span>pre-release · open source</div>
             <h1>tickets agents<br> <span class="accent">can drive.</span></h1>
-            <p class="lead">pm keeps tickets and projects in a local SQLite database, and every change is an op in an append-only log. One binary is both the human CLI and the agent contract &mdash; no prompts, <code>--json</code> on every read, stable exit codes.</p>
+            <p class="lead">Local-first tickets in SQLite with an append-only op log. No prompts, <code>--json</code> everywhere, stable exit codes.</p>
           </div>
           <div class="hero-install">
             <div class="install-line wrap"><span class="prompt">$</span>cargo install --locked --git https://github.com/OpenThinkAi/pm pm</div>
-            <div class="install-note">not on npm yet · needs a stable Rust toolchain · binary: <code>pm</code></div>
+            <div class="install-note">not on npm yet · Rust ≥ 1.85</div>
           </div>
         </div>
 
@@ -64,29 +64,17 @@
               <div><span class="prompt">$</span> PM_ACTOR=agent-a pm claim --ready</div>
               <div class="out">PM-1</div>
               <div><span class="prompt">$</span> PM_ACTOR=agent-b pm claim PM-1</div>
-              <div class="out">pm: PM-1 is taken by agent-a (since 1790794280142.0): ticket is in state</div>
-              <div class="out">    'in-progress', which is not unstarted</div>
-              <div class="out"><span class="dim">exit 75 → pick a different ticket</span></div>
+              <div class="out">pm: PM-1 is taken by agent-a (since 2026-09-30 20:01 UTC) …</div>
+              <div class="out"><span class="dim">exit 75 → pick another</span></div>
             </div>
           </div>
         </div>
 
         <h2 class="section-h" id="how">// how it works</h2>
-        <p><strong>The log is the database.</strong> Tables are derived from the op log, and <code>pm doctor</code> checks they replay from it. Fields merge last-writer-wins, labels as sets, and descriptions are Loro text CRDTs, so concurrent edits merge instead of clobbering.</p>
-        <p><strong>Built to be scripted.</strong> Nothing reads stdin or prompts. Every read takes <code>--json</code> and returns a versioned <code>{"schema": 1, &hellip;}</code> shape. Exit codes: <code>0</code> ok, <code>1</code> error, <code>2</code> usage, <code>3</code> not found, <code>75</code> taken.</p>
-        <p><strong>Ready means ready.</strong> <code>pm ready</code> lists unstarted, unassigned, unheld, ungated tickets whose blockers are done. <code>pm hold</code> hands one to a human; <code>pm check</code> reports stale tickets, holds and blocker cycles.</p>
-        <p><strong>Sync is optional.</strong> Alone, the local database decides. With a self-hosted pm-hub, <code>pm sync</code> pushes and pulls ops, the hub assigns ticket numbers, and claims are decided first-come, so two machines can't take the same ticket.</p>
-        <p><strong>A board when you want one.</strong> <code>pm app</code> opens the board in <a href="../ui-leaf/">ui-leaf</a>; <code>pm edit</code> opens the ticket editor, or <code>$EDITOR</code> when there's no display.</p>
-        <p>It doesn't dispatch, assign or run pipelines. It stores ticket state; a build loop calls <code>pm</code> the way it calls <code>git</code>.</p>
-
-        <h2 class="section-h" id="start">// try it</h2>
-        <div class="demo-terminal">
-          <div><span class="prompt">$</span> pm init</div>
-          <div><span class="prompt">$</span> pm new --title "Write the release notes"</div>
-          <div><span class="prompt">$</span> pm claim --ready</div>
-          <div><span class="prompt">$</span> pm done PM-1</div>
-        </div>
-        <p>Moving from a markdown vault? <code>pm import vault &lt;path&gt;</code>. Every verb, flag and <code>--json</code> shape is in the <a href="https://github.com/OpenThinkAi/pm/blob/main/docs/cli-contract.md">CLI contract</a>; the rest is in the <a href="https://github.com/OpenThinkAi/pm#readme">README</a>.</p>
+        <p><strong>The log is the database.</strong> Tables replay from the op log; concurrent edits merge (last-writer-wins fields, label sets, Loro text).</p>
+        <p><strong>Built to be scripted.</strong> <code>pm ready</code> is the work queue; exit <code>75</code> means someone else took it.</p>
+        <p><strong>Sync is optional.</strong> A self-hosted hub syncs machines and decides claims first-come. <code>pm app</code> opens a board.</p>
+        <p>Every verb and <code>--json</code> shape: <a href="https://github.com/OpenThinkAi/pm/blob/main/docs/cli-contract.md">CLI contract</a> · <a href="https://github.com/OpenThinkAi/pm#readme">README</a>.</p>
       </section>
     </main>
   </div>
