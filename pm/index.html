@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>pm — local-first tickets for agents · openthink</title>
+<meta name="description" content="pm is a local-first, relational ticket CLI for agents and humans: SQLite plus an append-only op log, --json on every read, stable exit codes, optional self-hosted sync.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="app">
+  <div class="suitebar">
+    <span class="brand">openthink</span>
+    <span class="sep">/</span>
+    <a href="../">home</a>
+    <span class="sep">·</span>
+    <a href="../think/">think</a>
+    <a href="../stamp/">stamp</a>
+    <a href="../ui-leaf/">ui-leaf</a>
+    <a href="../audit/">audit</a>
+    <a href="../pm/" class="current">pm</a>
+    <span class="grow"></span>
+    <span class="meta">pm · MIT / Apache-2.0</span>
+  </div>
+
+  <div class="layout full">
+    <main class="pane main-pane">
+      <div class="pane-title">[<span class="key">M</span>]AIN</div>
+      <section class="view active" data-view="home">
+        <div class="hero">
+          <div class="hero-copy">
+            <div class="badge"><span class="dot"></span>pre-release · open source</div>
+            <h1>tickets agents<br> <span class="accent">can drive.</span></h1>
+            <p class="lead">pm keeps tickets and projects in a local SQLite database, and every change is an op in an append-only log. One binary is both the human CLI and the agent contract &mdash; no prompts, <code>--json</code> on every read, stable exit codes.</p>
+          </div>
+          <div class="hero-install">
+            <div class="install-line wrap"><span class="prompt">$</span>cargo install --locked --git https://github.com/OpenThinkAi/pm pm</div>
+            <div class="install-note">not on npm yet · needs a stable Rust toolchain · binary: <code>pm</code></div>
+          </div>
+        </div>
+
+        <div class="demo-flow">
+          <div class="demo-step">
+            <div class="demo-label">file work, order it</div>
+            <div class="demo-terminal">
+              <div><span class="prompt">$</span> pm new --title "Add retry to the sync client"</div>
+              <div class="out">PM-1</div>
+              <div><span class="prompt">$</span> pm new --title "Write release notes"</div>
+              <div class="out">PM-2</div>
+              <div><span class="prompt">$</span> pm relate PM-2 --blocked-by PM-1</div>
+              <div class="out">PM-2</div>
+              <div><span class="prompt">$</span> pm graph</div>
+              <div class="out">wave 0: PM-1</div>
+              <div class="out">wave 1: PM-2</div>
+              <div class="out">done: false</div>
+            </div>
+          </div>
+          <div class="demo-step">
+            <div class="demo-label">two agents, one ticket</div>
+            <div class="demo-terminal">
+              <div><span class="prompt">$</span> PM_ACTOR=agent-a pm claim --ready</div>
+              <div class="out">PM-1</div>
+              <div><span class="prompt">$</span> PM_ACTOR=agent-b pm claim PM-1</div>
+              <div class="out">pm: PM-1 is taken by agent-a (since 1790794280142.0): ticket is in state</div>
+              <div class="out">    'in-progress', which is not unstarted</div>
+              <div class="out"><span class="dim">exit 75 → pick a different ticket</span></div>
+            </div>
+          </div>
+        </div>
+
+        <h2 class="section-h" id="how">// how it works</h2>
+        <p><strong>The log is the database.</strong> Tables are derived from the op log, and <code>pm doctor</code> checks they replay from it. Fields merge last-writer-wins, labels as sets, and descriptions are Loro text CRDTs, so concurrent edits merge instead of clobbering.</p>
+        <p><strong>Built to be scripted.</strong> Nothing reads stdin or prompts. Every read takes <code>--json</code> and returns a versioned <code>{"schema": 1, &hellip;}</code> shape. Exit codes: <code>0</code> ok, <code>1</code> error, <code>2</code> usage, <code>3</code> not found, <code>75</code> taken.</p>
+        <p><strong>Ready means ready.</strong> <code>pm ready</code> lists unstarted, unassigned, unheld, ungated tickets whose blockers are done. <code>pm hold</code> hands one to a human; <code>pm check</code> reports stale tickets, holds and blocker cycles.</p>
+        <p><strong>Sync is optional.</strong> Alone, the local database decides. With a self-hosted pm-hub, <code>pm sync</code> pushes and pulls ops, the hub assigns ticket numbers, and claims are decided first-come, so two machines can't take the same ticket.</p>
+        <p><strong>A board when you want one.</strong> <code>pm app</code> opens the board in <a href="../ui-leaf/">ui-leaf</a>; <code>pm edit</code> opens the ticket editor, or <code>$EDITOR</code> when there's no display.</p>
+        <p>It doesn't dispatch, assign or run pipelines. It stores ticket state; a build loop calls <code>pm</code> the way it calls <code>git</code>.</p>
+
+        <h2 class="section-h" id="start">// try it</h2>
+        <div class="demo-terminal">
+          <div><span class="prompt">$</span> pm init</div>
+          <div><span class="prompt">$</span> pm new --title "Write the release notes"</div>
+          <div><span class="prompt">$</span> pm claim --ready</div>
+          <div><span class="prompt">$</span> pm done PM-1</div>
+        </div>
+        <p>Moving from a markdown vault? <code>pm import vault &lt;path&gt;</code>. Every verb, flag and <code>--json</code> shape is in the <a href="https://github.com/OpenThinkAi/pm/blob/main/docs/cli-contract.md">CLI contract</a>; the rest is in the <a href="https://github.com/OpenThinkAi/pm#readme">README</a>.</p>
+      </section>
+    </main>
+  </div>
+
+  <div class="statusbar">
+    <div class="left"><span class="status-dot"></span>pm · ready</div>
+    <div class="spacer"></div>
+    <div class="right">
+      <span><span class="key-pill">g</span>github</span>
+      <span><span class="key-pill">?</span>help</span>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="help-modal" hidden>
+  <div class="modal-pane">
+    <div class="pane-title">[<span class="key">?</span>] HELP</div>
+    <button class="modal-close" aria-label="close">×</button>
+    <h3>Keyboard shortcuts</h3>
+    <table class="help-table">
+      <tr><td><span class="key-pill">g</span></td><td>open github</td></tr>
+      <tr><td><span class="key-pill">?</span></td><td>toggle this help</td></tr>
+      <tr><td><span class="key-pill">esc</span></td><td>close</td></tr>
+    </table>
+  </div>
+</div>
+
+<script>
+  // No npmPackage yet: @openthink/pm isn't published. Add it (and a
+  // version-badge span in the hero) once the first npm release lands.
+  window.SITE_CONFIG = {
+    tool: 'pm',
+    githubUrl: 'https://github.com/OpenThinkAi/pm'
+  };
+</script>
+<script src="../app.js"></script>
+</body>
+</html>

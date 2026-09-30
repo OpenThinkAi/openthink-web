@@ -11,6 +11,7 @@ The marketing & docs site for the [OpenThinkAi](https://github.com/OpenThinkAi) 
 /stamp/            @openthink/stamp    — local headless code review
 /ui-leaf/          @openthink/ui-leaf  — bring-your-own-view CLI runtime
 /audit/            @openthink/audit    — whole-codebase audits (oaudit, Rust)
+/pm/               pm (not on npm yet) — local-first ticket CLI (Rust)
 /dispatch/         @openthink/dispatch — GitHub triage router
 ```
 
@@ -42,6 +43,7 @@ opening `index.html` directly via `file://` won't resolve them.
 | `/stamp/`    | Placeholder — needs concepts/install/docs pass            |
 | `/ui-leaf/`  | Placeholder — needs concepts/install/docs pass            |
 | `/audit/`    | Placeholder — needs concepts/install/docs pass            |
+| `/pm/`       | Single-view page drafted; install is build-from-source    |
 | `/dispatch/` | Placeholder — needs concepts/install/docs pass            |
 
 ## Cutover

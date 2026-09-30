@@ -23,6 +23,7 @@
     <a href="stamp/">stamp</a>
     <a href="ui-leaf/">ui-leaf</a>
     <a href="audit/">audit</a>
+    <a href="pm/">pm</a>
     <span class="grow"></span>
     <span class="meta">MIT · open source</span>
   </div>
@@ -37,7 +38,7 @@
           <div class="hero-copy">
             <div class="badge"><span class="dot"></span>open source · MIT · local-first</div>
             <h1>open-source tools<br> <span class="accent">for agentic composition</span>.</h1>
-            <p class="lead">Local-first building blocks for agent-driven workflows. Memory across sessions, signed code review, whole-codebase audits, and browser views for any CLI &mdash; pieces small enough to compose, opinionated enough to ship.</p>
+            <p class="lead">Local-first building blocks for agent-driven workflows. Memory across sessions, signed code review, whole-codebase audits, tickets agents can claim, and browser views for any CLI &mdash; pieces small enough to compose, opinionated enough to ship.</p>
           </div>
           <div class="hero-install">
             <div class="install-line"><span class="prompt">$</span>npm install -g @openthink/&lt;tool&gt;</div>
@@ -97,10 +98,22 @@
             </div>
           </a>
 
+          <a class="tool-card" href="pm/">
+            <div class="tool-head">
+              <h3>pm</h3>
+              <span class="tool-pkg">pm · pre-release</span>
+            </div>
+            <div class="tool-tag">tickets agents can drive</div>
+            <p class="tool-desc">Local-first, relational tickets: SQLite plus an append-only op log. <code>--json</code> on every read, stable exit codes, a ready frontier, and optional self-hosted sync with first-come claims.</p>
+            <div class="tool-meta">
+              <span class="install">not on npm yet · build from source</span>
+            </div>
+          </a>
+
         </div>
 
         <h2 class="section-h" id="philosophy">// the shape of it</h2>
-        <p class="wide">Each tool stands alone. Each tool composes with the others. <code>stamp</code> reviews the diff before merge; <code>think</code> remembers what was decided so the next session doesn't repeat the work; <code>audit</code> sweeps the whole tree on demand; <code>ui-leaf</code> renders any of it in a browser when a terminal isn't enough.</p>
+        <p class="wide">Each tool stands alone. Each tool composes with the others. <code>stamp</code> reviews the diff before merge; <code>think</code> remembers what was decided so the next session doesn't repeat the work; <code>audit</code> sweeps the whole tree on demand; <code>pm</code> holds the tickets agents claim and close; <code>ui-leaf</code> renders any of it in a browser when a terminal isn't enough.</p>
         <p class="wide">All local-first. All MIT. No mandatory cloud. No vendor lock-in. The pieces are small on purpose — pick the ones you need, leave the rest.</p>
 
       </section>
