@@ -11,7 +11,7 @@ The marketing & docs site for the [OpenThinkAi](https://github.com/OpenThinkAi) 
 /stamp/            @openthink/stamp    — local headless code review
 /ui-leaf/          @openthink/ui-leaf  — bring-your-own-view CLI runtime
 /audit/            @openthink/audit    — whole-codebase audits (oaudit, Rust)
-/pm/               pm (not on npm yet) — local-first ticket CLI (Rust)
+/pm/               @openthink/pm       — local-first ticket CLI (Rust)
 /dispatch/         @openthink/dispatch — GitHub triage router
 ```
 
