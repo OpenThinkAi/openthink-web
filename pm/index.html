@@ -32,13 +32,13 @@
       <section class="view active" data-view="home">
         <div class="hero">
           <div class="hero-copy">
-            <div class="badge"><span class="dot"></span>pre-release · open source</div>
+            <div class="badge"><span class="dot"></span><span id="version-badge">v0.1.1</span> · open source</div>
             <h1>tickets agents<br> <span class="accent">can drive.</span></h1>
             <p class="lead">Local-first tickets in SQLite with an append-only op log. No prompts, <code>--json</code> everywhere, stable exit codes.</p>
           </div>
           <div class="hero-install">
-            <div class="install-line wrap"><span class="prompt">$</span>cargo install --locked --git https://github.com/OpenThinkAi/pm pm</div>
-            <div class="install-note">not on npm yet · Rust ≥ 1.85</div>
+            <div class="install-line"><span class="prompt">$</span>npm install -g @openthink/pm</div>
+            <div class="install-note">macOS (arm64, x64) · Linux x64 · no Rust needed</div>
           </div>
         </div>
 
@@ -103,10 +103,9 @@
 </div>
 
 <script>
-  // No npmPackage yet: @openthink/pm isn't published. Add it (and a
-  // version-badge span in the hero) once the first npm release lands.
   window.SITE_CONFIG = {
     tool: 'pm',
+    npmPackage: '@openthink/pm',
     githubUrl: 'https://github.com/OpenThinkAi/pm'
   };
 </script>
