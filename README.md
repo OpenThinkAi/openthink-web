@@ -15,9 +15,14 @@ The marketing & docs site for the [OpenThinkAi](https://github.com/OpenThinkAi) 
 /dispatch/         @openthink/dispatch — GitHub triage router
 ```
 
-Every page shares `style.css` and `app.js` from the root. Each tool page declares
-its config inline as `window.SITE_CONFIG` (tool, tabs, sidebar, github URL, npm
-package) before loading `app.js`.
+Every page shares `style.css` and `app.js` from the root. Each page loads its
+config from a sibling `config.js` that sets `window.SITE_CONFIG` (tool, tabs,
+sidebar, github URL, npm package) before `app.js`.
+
+Every page carries a `Content-Security-Policy` meta tag (`script-src 'self'`,
+`style-src 'self'`, network access limited to registry.npmjs.org). Keep pages free
+of inline `<script>`, `style="..."` and `on*=` handlers, and self-host any new
+asset; anything else is blocked. A new page needs the same meta tag in its `<head>`.
 
 The suite bar (top of every page) is the cross-tool nav. The tabbar (per-tool
 pages only) is the in-tool nav.

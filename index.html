@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; connect-src https://registry.npmjs.org; style-src 'self'; font-src 'self'; img-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>openthink — open-source agentic composition</title>
 <meta name="description" content="Open-source agentic composition: local-first tools that compose into agent-driven workflows — memory, code review, codebase audits, and browser views for any CLI.">
@@ -142,12 +143,7 @@
   </div>
 </div>
 
-<script>
-  window.SITE_CONFIG = {
-    tool: null,
-    githubUrl: 'https://github.com/OpenThinkAi'
-  };
-</script>
+<script src="config.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
