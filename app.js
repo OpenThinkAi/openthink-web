@@ -30,19 +30,33 @@
   function renderSidebar(tab) {
     if (!sidebarNav) return;
     const config = SIDEBAR[tab];
-    if (!config) { sidebarNav.innerHTML = ''; return; }
-    const html = config.groups.map(group => {
-      const items = group.items.map((item, i) => {
-        const last = i === group.items.length - 1 ? ' last' : '';
+    // Built with DOM APIs (textContent, never innerHTML) so config values
+    // can't inject markup; hrefs are limited to in-page anchors and https.
+    const nodes = [];
+    (config ? config.groups : []).forEach(group => {
+      const heading = document.createElement('div');
+      heading.className = 'group';
+      heading.textContent = group.label;
+      nodes.push(heading);
+      group.items.forEach((item, i) => {
+        const a = document.createElement('a');
+        a.className = 'nav-link' + (i === group.items.length - 1 ? ' last' : '');
+        a.textContent = item.label;
         if (item.tab) {
-          return `<a href="#" class="nav-link${last}" data-goto="${item.tab}">${item.label}</a>`;
+          a.href = '#';
+          a.dataset.goto = item.tab;
+        } else {
+          const href = String(item.href || '');
+          a.setAttribute('href', /^(#|https:\/\/)/.test(href) ? href : '#');
+          if (item.external) {
+            a.target = '_blank';
+            a.rel = 'noopener';
+          }
         }
-        const ext = item.external ? ' target="_blank" rel="noopener"' : '';
-        return `<a href="${item.href}" class="nav-link${last}"${ext}>${item.label}</a>`;
-      }).join('');
-      return `<div class="group">${group.label}</div>${items}`;
-    }).join('');
-    sidebarNav.innerHTML = html;
+        nodes.push(a);
+      });
+    });
+    sidebarNav.replaceChildren(...nodes);
     sidebarFocusIndex = -1;
   }
 

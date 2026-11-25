@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; connect-src https://registry.npmjs.org; style-src 'self'; font-src 'self'; img-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>pm — local-first tickets for agents · openthink</title>
 <meta name="description" content="pm is a local-first, relational ticket CLI for agents and humans: SQLite plus an append-only op log, --json on every read, stable exit codes, optional self-hosted sync.">
@@ -99,13 +100,7 @@
   </div>
 </div>
 
-<script>
-  window.SITE_CONFIG = {
-    tool: 'pm',
-    npmPackage: '@openthink/pm',
-    githubUrl: 'https://github.com/OpenThinkAi/pm'
-  };
-</script>
+<script src="config.js"></script>
 <script src="../app.js"></script>
 </body>
 </html>

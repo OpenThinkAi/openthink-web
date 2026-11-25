@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; connect-src https://registry.npmjs.org; style-src 'self'; font-src 'self'; img-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ui-leaf — bring-your-own-view CLI runtime · openthink</title>
 <meta name="description" content="Customizable browser views, on demand, for any CLI in any language.">
@@ -68,13 +69,7 @@
   </div>
 </div>
 
-<script>
-  window.SITE_CONFIG = {
-    tool: 'ui-leaf',
-    githubUrl: 'https://github.com/OpenThinkAi/ui-leaf',
-    npmPackage: '@openthink/ui-leaf'
-  };
-</script>
+<script src="config.js"></script>
 <script src="../app.js"></script>
 </body>
 </html>
