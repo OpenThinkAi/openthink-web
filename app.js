@@ -1,8 +1,8 @@
 (() => {
   'use strict';
 
-  // Per-page configuration is set by each HTML page before loading this script,
-  // via window.SITE_CONFIG. Shape:
+  // Per-page configuration is set by a config.js next to each HTML page, loaded
+  // before this script, via window.SITE_CONFIG. Shape:
   //   {
   //     tool: 'think' | 'stamp' | 'ui-leaf' | 'audit' | 'pm' | null,
   //     tabs: ['home','concepts','install','docs'],
@@ -43,7 +43,7 @@
         a.className = 'nav-link' + (i === group.items.length - 1 ? ' last' : '');
         a.textContent = item.label;
         if (item.tab) {
-          a.href = '#';
+          a.setAttribute('href', '#');
           a.dataset.goto = item.tab;
         } else {
           const href = String(item.href || '');
